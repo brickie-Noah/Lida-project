@@ -1,0 +1,4 @@
+notebook
+ipywidgets
+python-dotenv
+lida
