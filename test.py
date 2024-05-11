@@ -88,3 +88,84 @@ class Manager(object):
             return self.summarizer.summarize(
                 data=self.data, text_gen=self.text_gen, file_name=file_name, n_samples=n_samples,
                 summary_method=summary_method, textgen_config=textgen_config)
+
+
+
+
+#new von chatgpt
+
+
+import openai
+import altair as alt
+
+# Setze deinen OpenAI API-Schlüssel hier ein
+api_key = "DEIN_API_SCHLÜSSEL"
+
+# Generiere Altair-Code (Beispiel)
+altair_code = alt.Chart("data.csv").mark_bar().encode(
+    x="category:N",
+    y="value:Q"
+).properties(
+    title="Mein Altair-Diagramm"
+).to_json()
+
+# Anfrage an ChatGPT
+user_input = f"Ändere die Farbe der Balken in meinem Altair-Diagramm auf Blau."
+response = openai.ChatCompletion.create(
+    model="gpt-4.0-turbo",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": user_input},
+    ],
+    api_key=api_key
+)
+
+# Extrahiere die Antwort von ChatGPT
+chat_result = response.choices[0].message["content"]
+print("ChatGPT sagt:", chat_result)
+
+# Führe die Änderung im Altair-Code durch (Beispiel)
+altair_code["encoding"]["color"] = {"field": "category", "type": "nominal", "scale": {"range": "blue"}}
+
+# Zeige das aktualisierte Altair-Diagramm an
+chart = alt.Chart.from_dict(altair_code)
+chart.show()
+
+import openai
+import altair as alt
+
+# Setze deinen OpenAI API-Schlüssel hier ein
+api_key = "DEIN_API_SCHLÜSSEL"
+
+# Generiere Altair-Code (Beispiel)
+altair_code = alt.Chart("data.csv").mark_bar().encode(
+    x="category:N",
+    y="value:Q"
+).properties(
+    title="Mein Altair-Diagramm"
+).to_json()
+
+# Deine Anweisung an ChatGPT
+user_instruction = "Ändere die Farbe der Balken in meinem Altair-Diagramm auf Blau."
+
+# Anfrage an ChatGPT
+response = openai.ChatCompletion.create(
+    model="gpt-4.0-turbo",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": user_instruction},
+        {"role": "assistant", "content": altair_code}  # Übergebe den Altair-Code an ChatGPT
+    ],
+    api_key=api_key
+)
+
+# Extrahiere die Antwort von ChatGPT
+chat_result = response.choices[0].message["content"]
+print("ChatGPT sagt:", chat_result)
+
+# Führe die Änderung im Altair-Code durch (Beispiel)
+altair_code["encoding"]["color"] = {"field": "category", "type": "nominal", "scale": {"range": "blue"}}
+
+# Zeige das aktualisierte Altair-Diagramm an
+chart = alt.Chart.from_dict(altair_code)
+chart.show()
