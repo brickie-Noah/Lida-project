@@ -71,16 +71,66 @@ def add_data(code, data):
     )
     return completion.choices[0].message
 
+#show only values above a certain value
+def show_above_value(code, value):
+    completion = client.chat.completions.create(
+      model="gpt-4-turbo",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
+        {"role": "user", "content": "Show only values above a certain value in the boxplot by setting the value to "+value+" and begin the code with 'code:' for this altair code:"+code}
+      ]
+    )
+    return completion.choices[0].message
+
+#show only values below a certain value
+def show_below_value(code, value):
+    completion = client.chat.completions.create(
+      model="gpt-4-turbo",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
+        {"role": "user", "content": "Show only values below a certain value in the boxplot by setting the value to "+value+" and begin the code with 'code:' for this altair code:"+code}
+      ]
+    )
+    return completion.choices[0].message
+
+#show only values between two values
+def show_between_values(code, value1, value2):
+    completion = client.chat.completions.create(
+      model="gpt-4-turbo",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
+        {"role": "user", "content": "Show only values between two values in the boxplot by setting the values to "+value1+" and "+value2+" and begin the code with 'code:' for this altair code:"+code}
+      ]
+    )
+    return completion.choices[0].message
+
+#show only one category
+def show_one_category(code, category):
+    completion = client.chat.completions.create(
+      model="gpt-4-turbo",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
+        {"role": "user", "content": "Show only one category in the boxplot by setting the category to "+category+" and begin the code with 'code:' for this altair code:"+code}
+      ]
+    )
+    return completion.choices[0].message
+
 
 
 def extract_code(text):
-    code_blocks = re.findall(r'python\n(.*?)```', text, re.DOTALL)
+    code_blocks = re.findall(r'```(.*?)```', text, re.DOTALL)
+    code_blocks = str(code_blocks).replace('\\n', "\n")
+    code_blocks = code_blocks.replace("\\", "")
+    #code_blocks = code_blocks.replace("'", "\\'")
     return code_blocks
 
 
 
-
-print(higlighting(code))
+print(extract_code(str(higlighting(code, higlitght))))
 #print(change_color(code))
 #print(zooming(code))
 
