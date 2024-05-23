@@ -6,6 +6,10 @@ import openai
 from PIL import Image
 from io import BytesIO
 import base64
+import re
+import pandas as pd
+from IPython.display import display
+import json
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -17,6 +21,25 @@ def base64_to_image(base64_string):
     
     # Use BytesIO to convert the byte data to image
     return Image.open(BytesIO(byte_data))
+
+def createDiagramm(i):
+    library = "altair"
+    textgen_config = TextGenerationConfig(n=1, temperature=0.2, use_cache=True)
+    charts = lida.visualize(summary=summary, goal=goals[i], textgen_config=textgen_config, library=library)  
+
+    #altair error fix 
+    #this way would be way better for perfomance ut I didnt get it to run
+    #charts[0].spec['data'] = {"url": path_to_save}
+    #this way loads data directly and causes lots of memory usage > lag
+    data_dict = data.to_dict(orient='records')
+    charts[0].spec['data'] = {"values": data_dict}
+
+    #display the chart
+    st.title("fixed Chart Executor Response Visualization")
+    st.vega_lite_chart(charts[0].spec, use_container_width=True)
+    st.code(charts[0].code)
+
+
 
 
 lida = Manager(text_gen = llm("openai"))
@@ -31,20 +54,25 @@ if menu == "Summarize":
         path_to_save = "filename.csv"
         with open(path_to_save, "wb") as f:
             f.write(file_uploader.getvalue())
-        summary = lida.summarize("filename.csv", summary_method="default", textgen_config=textgen_config)
-        st.write(summary)
-        goals = lida.goals(summary, n=2, textgen_config=textgen_config)
-        for goal in goals:
-            st.write(goal)
-        i = 0
-        library = "seaborn"
-        textgen_config = TextGenerationConfig(n=1, temperature=0.2, use_cache=True)
-        charts = lida.visualize(summary=summary, goal=goals[i], textgen_config=textgen_config, library=library)  
-        img_base64_string = charts[0].raster
-        img = base64_to_image(img_base64_string)
-        st.image(img)
-        
 
+        data = pd.read_csv(path_to_save)
+        st.write(data.head())
+
+        summary = lida.summarize("filename.csv", summary_method="default", textgen_config=textgen_config)
+        goals = lida.goals(summary, n=2, textgen_config=textgen_config)
+        i=0
+        for goal in goals:
+            #col1, col2 = st.columns([0.75,0.25])
+            #with col1:
+            st.write(goal.question)
+            #with col2:
+            if st.button("choose this goal", i):
+                createDiagramm(i)
+            with st.expander("see rational and visualization"):
+                st.write(goal.rationale + "\n\n" + goal.visualization)
+            i=i+1
+        
+      
 
         
 elif menu == "Question based Graph":
@@ -62,7 +90,8 @@ elif menu == "Question based Graph":
                 textgen_config = TextGenerationConfig(n=1, temperature=0.2, use_cache=True)
                 summary = lida.summarize("filename1.csv", summary_method="default", textgen_config=textgen_config)
                 user_query = text_area
-                charts = lida.visualize(summary=summary, goal=user_query, textgen_config=textgen_config)  
+                library = "seaborn"
+                charts = lida.visualize(summary=summary, goal=user_query, textgen_config=textgen_config, library=library)  
                 charts[0]
                 image_base64 = charts[0].raster
                 img = base64_to_image(image_base64)
