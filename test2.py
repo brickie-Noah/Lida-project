@@ -1,5 +1,11 @@
+import os
 from openai import OpenAI
+from dotenv import load_dotenv
 import re
+
+load_dotenv()
+OpenAI.api_key = os.getenv('OPENAI_API_KEY')
+
 client = OpenAI()
 
 code = "import altair as alt\nimport pandas as pd\n\ndef plot(data: pd.DataFrame):\n    data['median_income'] = pd.to_numeric(data['median_income'], errors='coerce')\n    data = data[pd.notna(data['median_income'])]\n    chart = alt.Chart(data).mark_boxplot().encode(\n        x=alt.X('ocean_proximity:N', axis=alt.Axis(title='Ocean Proximity')),\n        y=alt.Y('median_income:Q', axis=alt.Axis(title='Median Income')),\n        color=alt.Color('ocean_proximity:N', legend=alt.Legend(title='Ocean Proximity'), scale=alt.Scale(scheme='category10'))\n    ).properties(title='Distribution of Median Income Across Different Ocean Proximity Categories')\n    return chart\n\nchart = plot(data)"
@@ -129,6 +135,21 @@ def extract_code(text):
     #code_blocks = code_blocks.replace("'", "\\'")
     return code_blocks
 
+def extract_code_v2(chatcompletionmessage):
+    txt = chatcompletionmessage.content
+    # Reverse the text
+    reversed_txt = txt[::-1]
+    # Pattern to find the last occurrence of the reversed "code:" followed by the reversed "chart = plot(data)"
+    pattern = r"\)atad\(tolp = trahc(.*?)\:edoc"
+    # Find all matches
+    matches = re.findall(pattern, reversed_txt, re.DOTALL)
+    # Reverse the matches to get the original order and take the first one as it corresponds to the last match in the original text
+    x = [match[::-1] for match in matches]
+    # Print the last match
+    if x:
+      return(x[0])
+    else:
+      return("No match found")
 
 
 #print(extract_code(str(higlighting(code, higlitght))))

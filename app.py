@@ -10,6 +10,9 @@ import re
 import pandas as pd
 from IPython.display import display
 import json
+import test2
+import altair as alt
+
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -36,8 +39,30 @@ def createDiagramm(i):
 
     #display the chart
     st.title("fixed Chart Executor Response Visualization")
-    st.vega_lite_chart(charts[0].spec, use_container_width=True)
-    st.code(charts[0].code)
+    order = st.text_input("reorder data", placeholder="divide with a ','", key=i)
+    original = st.vega_lite_chart(charts[0].spec, use_container_width=True)
+    with st.expander("see code"):
+                st.code(charts[0].code)
+    # NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN
+    if order:
+        
+        # Process the new order
+        newcode = test2.reorder_data(charts[0].code, order)
+
+        newcode = test2.extract_code_v2(newcode)
+
+        exec_locals = {}
+        exec(newcode, globals(), exec_locals)
+        # Access the plot function from the local variables captured by exec()
+        plot = exec_locals['plot']
+
+        st.write("reordered chart")
+        chart = plot(data)
+        st.altair_chart(chart, use_container_width=True)
+        with st.expander("see new code"):
+             st.code(newcode)
+        
+
 
 
 
@@ -66,7 +91,7 @@ if menu == "Summarize":
             #with col1:
             st.write(goal.question)
             #with col2:
-            if st.button("choose this goal", i):
+            if st.toggle("choose this goal", i, disabled=False):
                 createDiagramm(i)
             with st.expander("see rational and visualization"):
                 st.write(goal.rationale + "\n\n" + goal.visualization)
