@@ -14,7 +14,7 @@ higlitght = "inland"
 color = "green"
 size = "500x300"
 order = "['NEAR BAY', 'INLAND', 'NEAR OCEAN', 'ISLAND', '<1H OCEAN']"
-data = "data['median_income'] = pd.to_numeric(data['median_income'], errors='coerce')\n    data = data[pd.notna(data['median_income'])]"#?? daten ändern
+data = "{'ocean_proximity': ['NEAR BAY', 'INLAND', 'NEAR OCEAN', 'ISLAND', '<1H OCEAN'], 'median_income': [50000, 60000, 70000, 80000, 90000]}"
 category = "INLAND"
 
 #highghlithing in the given code
@@ -155,11 +155,11 @@ def extract_code_v2(chatcompletionmessage):
 #print(extract_code(str(higlighting(code, higlitght))))
 #print(extract_code(str(change_color(code, color))))
 #print(extract_code(str(zooming(code, size))))
-print(extract_code(str(reorder_data(code, order))))
+#print(extract_code(str(reorder_data(code, order))))
 #print(extract_code(str(add_data(code, data))))
-#print(extract_code(str(show_above_value(code, "50000"))))
-#print(extract_code(str(show_below_value(code, "50000"))))
-#print(extract_code(str(show_between_values(code, "50000", "100000"))))
+print(extract_code(str(show_above_value(code, "10"))))
+print(extract_code(str(show_below_value(code, "10"))))
+print(extract_code(str(show_between_values(code, "5", "10"))))
 #print(extract_code(str(show_one_category(code, category))))
 
 
