@@ -35,28 +35,24 @@ if 'goalNumber' not in st.session_state:
 if 'data' not in st.session_state:
     st.session_state.data = None
 
-#states so stuff can be used like toggle buttons
-if 'reorder' not in st.session_state:
-    st.session_state.reorder = False
-def click_button_reorder():
-    st.session_state.reorder = True
 
-# # Initialize button states
-# button_states = {
-#     'reorder': False,
-#     'highlighting': False,
-#     'change_color': False,
-#     'zooming': False,
-#     'add_data': False,
-#     'show_above_value': False,
-#     'show_below_value': False,
-#     'show_between_values': False,
-#     'show_one_category': False,
-# }
-# # Function to handle button clicks
-# def click_button(action):
-#     for key in button_states.keys():
-#         button_states[key] = (key == action)
+# Initialize button states
+if 'button_states' not in st.session_state:
+    st.session_state.button_states = {
+        'reorder': False,
+        'highlighting': False,
+        'change_color': False,
+        'zooming': False,
+        'add_data': False,
+        'show_above_value': False,
+        'show_below_value': False,
+        'show_between_values': False,
+        'show_one_category': False,
+    }
+# Function to handle button clicks
+def click_button(action):
+    for key in st.session_state.button_states.keys():
+        st.session_state.button_states[key] = (key == action)
 
 
 ############ THIS WAS USED PREVIOUSLY IF WE USE A METHOD LIKE IN THE COMMENTED CODE AT THE BOTTOM WE CAN USE THIS ##############
@@ -67,26 +63,62 @@ def click_button_reorder():
 #     return Image.open(BytesIO(byte_data))
 
 
-def reorder(charts, data, type):
-    # NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN
-    order = st.text_input("reorder data", placeholder="divide with a ','")#, key=i)
-    if order:
-        # Process the new order
-        newcode = test2.reorder_data(charts[0].code, order)
-        newcode = test2.extract_code_v2(newcode)
+def edit(charts, data, type):
+        newcode = None
+        # Process the new edit type and generate the new code
+        if type == "reorder":
+            # NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN
+            reorder = st.text_input("reorder data", placeholder="divide with a ','")
+            if reorder:
+                newcode = test2.reorder_data(charts[0].code, reorder)
+        elif type == "highlighting":
+            highlighting = st.text_input("highlight", placeholder="what do you want to highlight?")
+            if highlighting:
+                newcode = test2.higlighting(charts[0].code, highlighting)
+        elif type == "change_color":
+            change_color = st.text_input("change color data", placeholder="what color do you want?")
+            if change_color:
+                newcode = test2.change_color(charts[0].code, change_color)
+        elif type == "zooming":
+            zooming = st.text_input("zooming", placeholder="what width do you want?")
+            if zooming:
+                newcode = test2.zooming(charts[0].code, zooming)
+        elif type == "add_data":
+            add_data = st.text_input("add data", placeholder="what data do you want to add?")
+            if add_data:
+                newcode = test2.add_data(charts[0].code, add_data)
+        elif type == "show_above_value":
+            show_above_value = st.text_input("show above value", placeholder="above which value?")
+            if show_above_value:
+                newcode = test2.show_above_value(charts[0].code, show_above_value)
+        elif type == "show_below_value":
+            show_below_value = st.text_input("show below value", placeholder="below which value?")
+            if show_below_value:
+                newcode = test2.show_below_value(charts[0].code, show_below_value)
+        elif type == "show_between_values":
+            show_between_values = st.text_input("show between values", placeholder="between which values? (divide with a 'and')")
+            if show_between_values:
+                newcode = test2.show_between_values(charts[0].code, show_between_values)
+        elif type == "show_one_category":
+            show_one_category = st.text_input("show one category", placeholder="which category?")
+            if show_one_category:
+                newcode = test2.show_one_category(charts[0].code, show_one_category)
 
+        if newcode is not None:
+            # get the code from the chatgpt response
+            newcode = test2.extract_code_v2(newcode)
 
+            exec_locals = {}
+            exec(newcode, globals(), exec_locals)
+            # Access the plot function from the local variables captured by exec()
+            plot = exec_locals['plot']
 
-        exec_locals = {}
-        exec(newcode, globals(), exec_locals)
-        # Access the plot function from the local variables captured by exec()
-        plot = exec_locals['plot']
+            #st.write("reordered chart")
+            chart = plot(data)
+            st.altair_chart(chart, use_container_width=True)
+            with st.expander("see new code"):
+                st.code(newcode)
 
-        st.write("reordered chart")
-        chart = plot(data)
-        st.altair_chart(chart, use_container_width=True)
-        with st.expander("see new code"):
-             st.code(newcode)
 
 def createDiagramm():
     library = "altair"
@@ -101,46 +133,25 @@ def createDiagramm():
     data_dict = st.session_state.data.to_dict(orient='records')
     charts[0].spec['data'] = {"values": data_dict}
 
-    #display the chart
-    st.title("fixed Chart Executor Response Visualization")
-    
+    #display the chart    
     original = st.vega_lite_chart(charts[0].spec, use_container_width=True)
     with st.expander("see code"):
                 st.code(charts[0].code)
-    # if st.button("reorder data"):
-    #     reorder(charts)
 
+    # Create buttons in columns
+    buttons = list(st.session_state.button_states.keys())
+    columns = st.columns(len(buttons))
 
-    st.button('reorder', on_click=click_button_reorder)
-    # st.button('higlighting', on_click=click_button_reorder)
-    # st.button('change_color', on_click=click_button_reorder)
-    # st.button('zooming', on_click=click_button_reorder)
-    # st.button('add_data', on_click=click_button_reorder)
-    # st.button('show_above_value', on_click=click_button_reorder)
-    # st.button('show_below_value', on_click=click_button_reorder)
-    # st.button('show_between_values', on_click=click_button_reorder)
-    # st.button('show_one_category', on_click=click_button_reorder)
-
-    if st.session_state.reorder:
-        reorder(charts, st.session_state.data, "reorder")
-    # if st.session_state.higlighting:
-    #     reorder(charts, st.session_state.data, "higlighting")
-
-
-    # # Create buttons
-    # buttons = button_states.keys()
-    # for button in buttons:
-    #     if st.button(button, key=button):
-    #         click_button(button)
+    for idx, button in enumerate(buttons):
+        with columns[idx]:
+            if st.button(button, key=button):
+                click_button(button)
     
-    # # Perform actions based on button states
-    # for action, state in button_states.items():
-    #     if state:
-    #         reorder(charts, st.session_state.data, action)
-        
-
-
-    
+    # Perform actions based on button states
+    for action, state in st.session_state.button_states.items():
+        if state:
+            st.write(f"Displaying diagram for {action}")
+            edit(charts, st.session_state.data, action)
         
 
 def display_second_page():
@@ -156,9 +167,6 @@ def display_second_page():
             fields=summary_dict['fields']
         )
         st.session_state.summary = summary  # Update the session state with the Summary object
-        st.write(f"nach summary erstellung summary_dict {type(summary_dict)}")
-        st.write(f"nach summary erstellung summary {type(summary)}")
-    st.write(f"sessionstate.summary am ende {type(st.session_state.summary)}")
     if 'data' in st.session_state and 'goalNumber' in st.session_state and 'summary' in st.session_state and 'goals' in st.session_state:
         createDiagramm()
     else:
@@ -202,21 +210,24 @@ def display_first_page():
                 #createDiagramm(i, summary, goals, data)
             goalNumber=goalNumber+1
         
-
+################################### MANAGE THE DIFFERENT PAGES ##################################
 # Dictionary to map page names to functions
 pages = {
     "first": display_first_page,
     "second": display_second_page,
     #"third": display_third_page
-}
-      
+} 
 # Initialize session state if not already done
 if 'page' not in st.session_state:
     st.session_state.page = "first"
-
 # Display the current page based on session state
 pages[st.session_state.page]()
+##################################################################################################
         
+
+# THIS WAS A PAGE WHERE YOU COULD WRITE YOUR OWN GOAL TO LIDA 
+# SOMETHING LIKE THAT WILL BE NEEDED FOR THE FINAL PRODUCT
+
 #elif menu == "Question based Graph":
     # st.subheader("Query your Data to Generate Graph")
     # file_uploader = st.file_uploader("Upload your CSV", type="csv")
