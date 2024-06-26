@@ -126,6 +126,30 @@ def show_one_category(code, category):
     )
     return completion.choices[0].message
 
+#change chart type
+def change_chart_type(code, chart_type):
+    completion = client.chat.completions.create(
+      model="gpt-4-turbo",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
+        {"role": "user", "content": "Change the chart type to "+chart_type+" and begin the code with 'code:' for this altair code:"+code}
+      ]
+    )
+    return completion.choices[0].message
+
+#chage chart type to better fit the data given no chart type
+def change_chart_type_better_fit(code):
+    completion = client.chat.completions.create(
+      model="gpt-4-turbo",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
+        {"role": "user", "content": "Change the chart type to better fit the data and begin the code with 'code:' for this altair code:"+code}
+      ]
+    )
+    return completion.choices[0].message
+
 
 
 def extract_code(text):
@@ -150,6 +174,31 @@ def extract_code_v2(chatcompletionmessage):
       return(x[0])
     else:
       return("No match found")
+    
+#categorice function given natural language to code
+def categorize(text):
+    textmessage = """Classify the given natural language into one of the following categories: change_color, highlight, zoom, reorder, add_data, show_above_value, show_below_value, show_between_values, show_one_category, change_chart_type, change_chart_type_better_fit. Here are some examples for the classification:         ["Change the color of the chart to green", "change_color"],
+        ["Highlight the 'inland' data", "highlight"],
+        ["Zoom in on the boxplot", "zoom"],
+        ["Reorder the data in the boxplot", "reorder"],
+        ["Add data to the chart", "add_data"],
+        ["Show only values above a certain value", "show_above_value"],
+        ["Show only values below a certain value", "show_below_value"],
+        ["Show only values between two values", "show_between_values"],
+        ["Show only one category", "show_one_category"],
+        ["Change the chart type to pie", "change_chart_type"],
+        ["Change the chart type to better fit the data", "change_chart_type_better_fit"]
+        Here is the given natural language: """+text+"."
+    
+    completion = client.chat.completions.create(
+      model="gpt-4-turbo",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to categorize the given natural language."},
+        {"role": "user", "content": textmessage}
+      ]
+    )
+    return completion.choices[0].message
 
 
 #print(extract_code(str(higlighting(code, higlitght))))
@@ -157,9 +206,10 @@ def extract_code_v2(chatcompletionmessage):
 #print(extract_code(str(zooming(code, size))))
 #print(extract_code(str(reorder_data(code, order))))
 #print(extract_code(str(add_data(code, data))))
-print(extract_code(str(show_above_value(code, "10"))))
-print(extract_code(str(show_below_value(code, "10"))))
-print(extract_code(str(show_between_values(code, "5", "10"))))
+#print(extract_code(str(show_above_value(code, "10"))))
+#print(extract_code(str(show_below_value(code, "10"))))
+#print(extract_code(str(show_between_values(code, "5", "10"))))
 #print(extract_code(str(show_one_category(code, category))))
-
-
+#print(extract_code(str(change_chart_type(code, "pie"))))
+#print(extract_code(str(change_chart_type_better_fit(code))))
+print(categorize("Make one category stand out in the boxplot."))
