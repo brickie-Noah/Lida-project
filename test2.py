@@ -103,13 +103,13 @@ def show_below_value(code, value):
     return completion.choices[0].message
 
 #show only values between two values
-def show_between_values(code, value1, value2):
+def show_between_values(code, value):
     completion = client.chat.completions.create(
       model="gpt-4-turbo",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only values between two values in the boxplot by setting the values to "+value1+" and "+value2+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Show only values between two values in the boxplot by setting the values to "+value+" and begin the code with 'code:' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -206,9 +206,9 @@ def categorize(text):
 #print(extract_code(str(zooming(code, size))))
 #print(extract_code(str(reorder_data(code, order))))
 #print(extract_code(str(add_data(code, data))))
-#print(extract_code(str(show_above_value(code, "10"))))
-#print(extract_code(str(show_below_value(code, "10"))))
-#print(extract_code(str(show_between_values(code, "5", "10"))))
+print(extract_code(str(show_above_value(code, "10"))))
+print(extract_code(str(show_below_value(code, "10"))))
+print(extract_code(str(show_between_values(code, "5 and 10"))))
 #print(extract_code(str(show_one_category(code, category))))
 #print(extract_code(str(change_chart_type(code, "pie"))))
 #print(extract_code(str(change_chart_type_better_fit(code))))
