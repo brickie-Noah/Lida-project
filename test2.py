@@ -164,7 +164,8 @@ def extract_code_v2(chatcompletionmessage):
     # Reverse the text
     reversed_txt = txt[::-1]
     # Pattern to find the last occurrence of the reversed "code:" followed by the reversed "chart = plot(data)"
-    pattern = r"\)atad\(tolp = trahc(.*?)\:edoc"
+    # pattern = r"\)atad\(tolp = trahc(.*?)\:edoc"
+    pattern = r"\)atad\(tolp = trahc(.*?)nohtyp```"
     # Find all matches
     matches = re.findall(pattern, reversed_txt, re.DOTALL)
     # Reverse the matches to get the original order and take the first one as it corresponds to the last match in the original text

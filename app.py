@@ -113,6 +113,7 @@ def edit(charts, data, type):
             # get the code from the chatgpt response
             newcode = test2.extract_code_v2(newcode)
 
+
             exec_locals = {}
             exec(newcode, globals(), exec_locals)
             # Access the plot function from the local variables captured by exec()
