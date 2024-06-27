@@ -48,6 +48,7 @@ if 'button_states' not in st.session_state:
         'show_below_value': False,
         'show_between_values': False,
         'show_one_category': False,
+        'change_chart_type_better_fit': False
     }
 # Function to handle button clicks
 def click_button(action):
@@ -103,6 +104,10 @@ def edit(charts, data, type):
             show_one_category = st.text_input("show one category", placeholder="which category?")
             if show_one_category:
                 newcode = test2.show_one_category(charts[0].code, show_one_category)
+        elif type == "change_chart_type_better_fit":
+            change_chart_type_better_fit = st.text_input("change chart type better fit", placeholder="which chart type?")
+            if change_chart_type_better_fit:
+                newcode = test2.change_chart_type_better_fit(charts[0].code, change_chart_type_better_fit)
 
         if newcode is not None:
             # get the code from the chatgpt response
