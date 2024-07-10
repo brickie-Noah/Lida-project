@@ -200,7 +200,7 @@ def categorize(text):
         ["Show only one category", "show_one_category"],
         ["Change the chart type to pie", "change_chart_type"],
         ["Change the chart type to better fit the data", "change_chart_type_better_fit"]
-        Here is the given natural language: """+text+"."
+        Here is the given natural language: """+text+". Just respond with the category of the given natural language."
     
     completion = client.chat.completions.create(
       model="gpt-4-turbo",
@@ -218,9 +218,9 @@ def categorize(text):
 #print(extract_code(str(zooming(code, size))))
 #print(extract_code(str(reorder_data(code, order))))
 #print(extract_code(str(add_data(code, data))))
-print(extract_code(str(show_above_value(code, "10"))))
-print(extract_code(str(show_below_value(code, "10"))))
-print(extract_code(str(show_between_values(code, "5 and 10"))))
+#print(extract_code(str(show_above_value(code, "10"))))
+#print(extract_code(str(show_below_value(code, "10"))))
+#print(extract_code(str(show_between_values(code, "5 and 10"))))
 #print(extract_code(str(show_one_category(code, category))))
 #print(extract_code(str(change_chart_type(code, "pie"))))
 #print(extract_code(str(change_chart_type_better_fit(code))))
