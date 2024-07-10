@@ -183,7 +183,6 @@ def extract_code_v2(chatcompletionmessage):
         smallest_match = match2.group(1)
     else:
         return "No match found"
-    
     # Reverse the smallest match to get the original order
     return smallest_match[::-1]
     
@@ -212,6 +211,29 @@ def categorize(text):
     )
     return completion.choices[0].message
 
+
+def extract_information(text):  #subject to change
+    textmessage = """extract the information needed to change the code from the given natural Language. the categories are change_color, highlight, zoom, reorder, add_data, show_above_value, show_below_value, show_between_values, show_one_category, change_chart_type, change_chart_type_better_fit. Here are some examples:
+      ["Highlight the 'inland' data", "inland"],
+      ["Zoom in on the boxplot", "zoom"],
+      ["Reorder the data in the boxplot in this order: NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN", "NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN"],
+      ["Add this data point to the chart: Munich, 1.5 million inhabitnats, 25000sqm, 4000€ average housing spendings", "Munich, 1.5 million inhabitnats, 25000sqm, 4000€ average housing spendings"],
+      ["Show only values above a housing cost of 3000", "3000"],
+      ["Show only values below a housing cost of 3000", "3000"],
+      ["Show only values between housing cost of 3000 and 4000", "3000 and 4000"],
+      ["Show only Near Bay", "Near Bay"],
+      ["Change the chart type to pie", "pie"],
+      Here is the given natural language: """+text+". Just respond with the information needed to change the code of the given natural language."
+    
+    completion = client.chat.completions.create(
+      model="gpt-4-turbo",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to categorize the given natural language."},
+        {"role": "user", "content": textmessage}
+      ]
+    )
+    return completion.choices[0].message
 
 #print(extract_code(str(higlighting(code, higlitght))))
 #print(extract_code(str(change_color(code, color))))
