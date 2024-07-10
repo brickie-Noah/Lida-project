@@ -164,17 +164,28 @@ def extract_code_v2(chatcompletionmessage):
     # Reverse the text
     reversed_txt = txt[::-1]
     # Pattern to find the last occurrence of the reversed "code:" followed by the reversed "chart = plot(data)"
-    # pattern = r"\)atad\(tolp = trahc(.*?)\:edoc"
-    pattern = r"\)atad\(tolp = trahc(.*?)nohtyp```"
+    patternCode = r"\)atad\(tolp = trahc(.*?)\:edoc"
+    # Pattern to find the last occurrence of the reversed "```python" followed by the reversed "chart = plot(data)"
+    patternPython = r"\)atad\(tolp = trahc(.*?)nohtyp```"
     # Find all matches
-    matches = re.findall(pattern, reversed_txt, re.DOTALL)
-    # Reverse the matches to get the original order and take the first one as it corresponds to the last match in the original text
-    x = [match[::-1] for match in matches]
-    # Print the last match
-    if x:
-      return(x[0])
+    match1 = re.search(patternCode, reversed_txt, re.DOTALL)
+    match2 = re.search(patternPython, reversed_txt, re.DOTALL)
+    # Determine the smallest match
+    if match1 and match2:
+        # Compare lengths of matched substrings
+        if len(match1.group(1)) < len(match2.group(1)):
+            smallest_match = match1.group(1)
+        else:
+            smallest_match = match2.group(1)
+    elif match1:
+        smallest_match = match1.group(1)
+    elif match2:
+        smallest_match = match2.group(1)
     else:
-      return("No match found")
+        return "No match found"
+    
+    # Reverse the smallest match to get the original order
+    return smallest_match[::-1]
     
 #categorice function given natural language to code
 def categorize(text):

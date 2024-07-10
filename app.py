@@ -15,6 +15,7 @@ import altair as alt
 from lida.datamodel import Summary
 
 
+
 lida = Manager(text_gen = llm("openai"))
 
 load_dotenv()
@@ -34,6 +35,8 @@ if 'goalNumber' not in st.session_state:
     st.session_state.goalNumber = 0
 if 'data' not in st.session_state:
     st.session_state.data = None
+if 'input_value' not in st.session_state:
+     st.session_state.input_value = None
 
 
 # Initialize button states
@@ -64,66 +67,66 @@ def click_button(action):
 #     return Image.open(BytesIO(byte_data))
 
 
-def edit(charts, data, type):
-        newcode = None
+
+def edit(charts, data, type, input_value=None):
+    # Function to handle input and generate new code
+    def handle_input(placeholder, code_generation_func, input_value):
+        if input_value is None:
+            input_value = st.text_input(placeholder)
+        if input_value:
+            return [code_generation_func(charts[0].code, input_value), input_value]
+        return None
+
+    newcode = None
         # Process the new edit type and generate the new code
-        if type == "reorder":
-            # NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN
-            reorder = st.text_input("reorder data", placeholder="divide with a ','")
-            if reorder:
-                newcode = test2.reorder_data(charts[0].code, reorder)
-        elif type == "highlighting":
-            highlighting = st.text_input("highlight", placeholder="what do you want to highlight?")
-            if highlighting:
-                newcode = test2.higlighting(charts[0].code, highlighting)
-        elif type == "change_color":
-            change_color = st.text_input("change color data", placeholder="what color do you want?")
-            if change_color:
-                newcode = test2.change_color(charts[0].code, change_color)
-        elif type == "zooming":
-            zooming = st.text_input("zooming", placeholder="what width do you want?")
-            if zooming:
-                newcode = test2.zooming(charts[0].code, zooming)
-        elif type == "add_data":
-            add_data = st.text_input("add data", placeholder="what data do you want to add?")
-            if add_data:
-                newcode = test2.add_data(charts[0].code, add_data)
-        elif type == "show_above_value":
-            show_above_value = st.text_input("show above value", placeholder="above which value?")
-            if show_above_value:
-                newcode = test2.show_above_value(charts[0].code, show_above_value)
-        elif type == "show_below_value":
-            show_below_value = st.text_input("show below value", placeholder="below which value?")
-            if show_below_value:
-                newcode = test2.show_below_value(charts[0].code, show_below_value)
-        elif type == "show_between_values":
-            show_between_values = st.text_input("show between values", placeholder="between which values? (divide with a 'and')")
-            if show_between_values:
-                newcode = test2.show_between_values(charts[0].code, show_between_values)
-        elif type == "show_one_category":
-            show_one_category = st.text_input("show one category", placeholder="which category?")
-            if show_one_category:
-                newcode = test2.show_one_category(charts[0].code, show_one_category)
-        elif type == "change_chart_type_better_fit":
-            change_chart_type_better_fit = st.text_input("change chart type better fit", placeholder="which chart type?")
-            if change_chart_type_better_fit:
-                newcode = test2.change_chart_type_better_fit(charts[0].code, change_chart_type_better_fit)
+        #also 
+        # NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN
 
-        if newcode is not None:
-            # get the code from the chatgpt response
-            newcode = test2.extract_code_v2(newcode)
+    # Process the new edit type and generate the new code
+    if type == "reorder":
+        input = handle_input("reorder data (divide with a ',')", test2.reorder_data, input_value)
+    elif type == "highlighting":
+        input = handle_input("highlight (what do you want to highlight?)", test2.higlighting, input_value)
+    elif type == "change_color":
+        input = handle_input("change color data (what color do you want?)", test2.change_color, input_value)
+    elif type == "zooming":
+        input = handle_input("zooming (what width do you want?)", test2.zooming, input_value)
+    elif type == "add_data":
+        input = handle_input("add data (what data do you want to add?)", test2.add_data, input_value)
+    elif type == "show_above_value":
+        input = handle_input("show above value (above which value?)", test2.show_above_value, input_value)
+    elif type == "show_below_value":
+        input = handle_input("show below value (below which value?)", test2.show_below_value, input_value)
+    elif type == "show_between_values":
+        input = handle_input("show between values (between which values? divide with 'and')", test2.show_between_values, input_value)
+    elif type == "show_one_category":
+        input = handle_input("show one category (which category?)", test2.show_one_category, input_value)
+    elif type == "change_chart_type_better_fit":
+        input = handle_input("change chart type better fit (which chart type?)", test2.change_chart_type_better_fit, input_value)
 
+    newcode = input[0]
+    input_value = input[1]
 
-            exec_locals = {}
-            exec(newcode, globals(), exec_locals)
-            # Access the plot function from the local variables captured by exec()
-            plot = exec_locals['plot']
+    if newcode is not None:
+        # get the code from the chatgpt response
+        newcode = test2.extract_code_v2(newcode)
 
-            #st.write("reordered chart")
-            chart = plot(data)
-            st.altair_chart(chart, use_container_width=True)
-            with st.expander("see new code"):
-                st.code(newcode)
+        if newcode == "No match found":
+            edit(charts, data, type, input_value)
+        else:
+            try:
+                exec_locals = {}
+                exec(newcode, globals(), exec_locals)
+                # Access the plot function from the local variables captured by exec()
+                plot = exec_locals['plot']
+
+                #st.write("reordered chart")
+                chart = plot(data)
+                st.altair_chart(chart, use_container_width=True)
+                with st.expander("see new code"):
+                    st.code(newcode)
+            except Exception as e:
+                edit(charts, data, type, input_value)
 
 
 def createDiagramm():
@@ -152,11 +155,12 @@ def createDiagramm():
         with columns[idx]:
             if st.button(button, key=button):
                 click_button(button)
+ 
     
     # Perform actions based on button states
     for action, state in st.session_state.button_states.items():
         if state:
-            st.write(f"Displaying diagram for {action}")
+            #st.write(f"Displaying diagram for {action}")
             edit(charts, st.session_state.data, action)
         
 
