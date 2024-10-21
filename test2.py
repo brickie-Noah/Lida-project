@@ -139,7 +139,7 @@ def change_chart_type(code, chart_type):
     return completion.choices[0].message
 
 #chage chart type to better fit the data given no chart type
-def change_chart_type_better_fit(code):
+def change_chart_type_better_fit(code, nothing):
     completion = client.chat.completions.create(
       model="gpt-4-turbo",
       response_format={ "type": "text"},

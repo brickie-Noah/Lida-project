@@ -31,6 +31,8 @@ if 'summary' not in st.session_state:
     st.session_state.summary = None
 if 'goals' not in st.session_state:
     st.session_state.goals = []
+if 'ownGoal' not in st.session_state:
+    st.session_state.ownGoal = None
 if 'goalNumber' not in st.session_state:
     st.session_state.goalNumber = 0
 if 'data' not in st.session_state:
@@ -51,6 +53,7 @@ if 'button_states' not in st.session_state:
         'show_below_value': False,
         'show_between_values': False,
         'show_one_category': False,
+        'change_chart_type' : False,
         'change_chart_type_better_fit': False
     }
 # Function to handle button clicks
@@ -59,12 +62,7 @@ def click_button(action):
         st.session_state.button_states[key] = (key == action)
 
 
-############ THIS WAS USED PREVIOUSLY IF WE USE A METHOD LIKE IN THE COMMENTED CODE AT THE BOTTOM WE CAN USE THIS ##############
-# #lida gives a base64 string which we convert to a image here
-# def base64_to_image(base64_string):
-#     byte_data = base64.b64decode(base64_string)
-#     # Use BytesIO to convert the byte data to image
-#     return Image.open(BytesIO(byte_data))
+
 
 
 
@@ -101,11 +99,14 @@ def edit(charts, data, type, input_value=None):
         input = handle_input("show between values (between which values? divide with 'and')", test2.show_between_values, input_value)
     elif type == "show_one_category":
         input = handle_input("show one category (which category?)", test2.show_one_category, input_value)
+    elif type == "change_chart_type":
+        input = handle_input("change chart type", test2.change_chart_type, input_value)
     elif type == "change_chart_type_better_fit":
         input = handle_input("change chart type better fit (which chart type?)", test2.change_chart_type_better_fit, input_value)
 
-    newcode = input[0]
-    input_value = input[1]
+    if input is not None:
+        newcode = input[0]
+        input_value = input[1]
 
     if newcode is not None:
         # get the code from the chatgpt response
@@ -131,16 +132,38 @@ def edit(charts, data, type, input_value=None):
 
 def createDiagramm():
     library = "altair"
-    textgen_config = TextGenerationConfig(n=1, temperature=0.2, use_cache=True)
+    textgen_config = TextGenerationConfig(n=1, temperature=0.2, model="gpt-4-turbo", use_cache=True)
     summary = st.session_state.summary
+    #st.write(st.session_state.goals)
     charts = lida.visualize(summary, goal=st.session_state.goals[st.session_state.goalNumber], textgen_config=textgen_config, library=library)  
-
+    # if st.session_state.goalNumber == 1000:
+    #     #charts = lida.visualize(summary, goal=custom_goal, textgen_config=textgen_config, library=library)  
+    #     #tempGoal = "what is the correleation between total rooms and population?"
+    #     #ownGoal = st.session_state.ownGoal
+    #     st.write("debug here goalnumber == 1000")
+    #     st.write("summary:",summary)
+    #     st.write("textgen_config:",textgen_config)
+    #     st.write("library:",library)
+    #     charts = lida.visualize(summary, goal=st.session_state.ownGoal, textgen_config=textgen_config, library=library)  
+    #     #st.write(custom_goal.type)
+    #     st.write(charts)
+    # else:
+    #     st.write("debug here goalnumber == ", st.session_state.goalNumber)
+    #     st.write("summary:",summary)
+    #     st.write("textgen_config:",textgen_config)
+    #     st.write("library:",library)
+    #     st.write("goals: ", st.session_state.goals)
+    #     charts = lida.visualize(summary, goal=st.session_state.goals[st.session_state.goalNumber], textgen_config=textgen_config, library=library)  
+    #     #charts = lida.visualize(summary, goal="what is the correleation between total rooms and population?", textgen_config=textgen_config, library=library)  
+    #     st.write(charts)
+    
     #altair error fix 
     #this way would be way better for perfomance ut I didnt get it to run
     #charts[0].spec['data'] = {"url": path_to_save}
     #this way loads data directly and causes lots of memory usage > lag
     data_dict = st.session_state.data.to_dict(orient='records')
     charts[0].spec['data'] = {"values": data_dict}
+
 
     #display the chart    
     original = st.vega_lite_chart(charts[0].spec, use_container_width=True)
@@ -155,7 +178,7 @@ def createDiagramm():
         with columns[idx]:
             if st.button(button, key=button):
                 click_button(button)
- 
+  
     
     # Perform actions based on button states
     for action, state in st.session_state.button_states.items():
@@ -219,7 +242,63 @@ def display_first_page():
                 st.session_state.page = "second"
                 #createDiagramm(i, summary, goals, data)
             goalNumber=goalNumber+1
+            
+            #goals.append("Write your own goal")
+            #####               what is the correleation between total rooms and population?   
+        ownGoal = st.text_input("Enter your own goal for Lida")
+        if st.button("Submit"):
+            if len(ownGoal) > 0:
+                goals.append(ownGoal)
+                st.session_state.goalNumber = len(goals) -1
+                st.session_state.goals = goals
+                #st.session_state.ownGoal = ownGoal
+                st.session_state.page = "second"
+
+                # # st.write(ownGoal)
+                # library = "altair"
+                # # #st.write("debug here")
+                # st.write("summary:",summary)
+                # st.write("textgen_config:",textgen_config)
+                # st.write("library:",library)
+                # charts = lida.visualize(summary, goal="what is the correleation between total rooms and population?", textgen_config=textgen_config, library=library)  
+                # # #charts = lida.visualize(summary, goal=st.session_state.goals[0], textgen_config=textgen_config, library=library)  
+                # st.write(charts)
+
+                #createDiagramm(len(goals), summary, goals, data)
         
+############### THIS WAS A PAGE WHERE YOU COULD WRITE YOUR OWN GOAL TO LIDA ####################
+# SOMETHING LIKE THAT WILL BE NEEDED FOR THE FINAL PRODUCT
+
+    # elif menu == "Question based Graph":
+    #     st.subheader("Query your Data to Generate Graph")
+    #     file_uploader = st.file_uploader("Upload your CSV", type="csv")
+    #     if file_uploader is not None:
+    #         path_to_save = "filename1.csv"
+    #         with open(path_to_save, "wb") as f:
+    #             f.write(file_uploader.getvalue())
+    #         text_area = st.text_area("Query your Data to Generate Graph", height=200)
+    #         if st.button("Generate Graph"):
+    #             if len(text_area) > 0:
+    #                 st.info("Your Query: " + text_area)
+    #                 lida = Manager(text_gen = llm("openai")) 
+    #                 textgen_config = TextGenerationConfig(n=1, temperature=0.2, use_cache=True)
+    #                 summary = lida.summarize("filename1.csv", summary_method="default", textgen_config=textgen_config)
+    #                 user_query = text_area
+    #                 library = "altair"
+    #                 charts = lida.visualize(summary=summary, goal="what is the correleation between total rooms and population?", textgen_config=textgen_config, library=library)  
+    #                 charts[0]
+    #                 image_base64 = charts[0].raster
+    #                 img = base64_to_image(image_base64)
+    #                 st.image(img)
+
+
+############ THIS WAS USED PREVIOUSLY IF WE USE A METHOD LIKE IN THE COMMENTED CODE AT THE BOTTOM WE CAN USE THIS ##############
+# #lida gives a base64 string which we convert to a image here
+def base64_to_image(base64_string):
+    byte_data = base64.b64decode(base64_string)
+    # Use BytesIO to convert the byte data to image
+    return Image.open(BytesIO(byte_data))
+
 ################################### MANAGE THE DIFFERENT PAGES ##################################
 # Dictionary to map page names to functions
 pages = {
@@ -235,30 +314,7 @@ pages[st.session_state.page]()
 ##################################################################################################
         
 
-# THIS WAS A PAGE WHERE YOU COULD WRITE YOUR OWN GOAL TO LIDA 
-# SOMETHING LIKE THAT WILL BE NEEDED FOR THE FINAL PRODUCT
 
-#elif menu == "Question based Graph":
-    # st.subheader("Query your Data to Generate Graph")
-    # file_uploader = st.file_uploader("Upload your CSV", type="csv")
-    # if file_uploader is not None:
-    #     path_to_save = "filename1.csv"
-    #     with open(path_to_save, "wb") as f:
-    #         f.write(file_uploader.getvalue())
-    #     text_area = st.text_area("Query your Data to Generate Graph", height=200)
-    #     if st.button("Generate Graph"):
-    #         if len(text_area) > 0:
-    #             st.info("Your Query: " + text_area)
-    #             lida = Manager(text_gen = llm("openai")) 
-    #             textgen_config = TextGenerationConfig(n=1, temperature=0.2, use_cache=True)
-    #             summary = lida.summarize("filename1.csv", summary_method="default", textgen_config=textgen_config)
-    #             user_query = text_area
-    #             library = "seaborn"
-    #             charts = lida.visualize(summary=summary, goal=user_query, textgen_config=textgen_config, library=library)  
-    #             charts[0]
-    #             image_base64 = charts[0].raster
-    #             img = base64_to_image(image_base64)
-    #             st.image(img)
             
 
 
