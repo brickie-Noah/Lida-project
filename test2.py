@@ -20,11 +20,11 @@ category = "INLAND"
 #highghlithing in the given code
 def higlighting(code, higlitght):
     completion = client.chat.completions.create(
-    model="gpt-4-turbo",
+    model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Change this altaircode that it higlightes the "+ higlitght +" data and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Change this altaircode that it higlightes the "+ higlitght +" data and, when using altair code change bin to false and make sure the operator precedence is correct use parantheses when needed, begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -32,11 +32,11 @@ def higlighting(code, higlitght):
 #changing the color of the chart
 def change_color(code, color):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Change the color in this altaircode of the chart to "+color+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Change the color in this altaircode of the chart to "+color+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -44,11 +44,11 @@ def change_color(code, color):
 #zooming in the chart
 def zooming(code, size):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Zoom in on the boxplot by setting the width to"+size+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Zoom in on the boxplot by setting the width to"+size+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -56,11 +56,11 @@ def zooming(code, size):
 #reordering data
 def reorder_data(code, order):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Reorder the data in the boxplot by setting the order of the categories to "+order+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Reorder the data in the boxplot by setting the order of the categories to "+order+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -69,11 +69,11 @@ def reorder_data(code, order):
 #add data
 def add_data(code, data):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Add the data "+ data + " to the chart. Begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Add the data "+ data + " to the chart. Begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -81,11 +81,11 @@ def add_data(code, data):
 #show only values above a certain value
 def show_above_value(code, value):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only values above a certain value in the boxplot by setting the value to "+value+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Show only values above a certain value in the boxplot by setting the value to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -93,11 +93,11 @@ def show_above_value(code, value):
 #show only values below a certain value
 def show_below_value(code, value):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only values below a certain value in the boxplot by setting the value to "+value+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Show only values below a certain value in the boxplot by setting the value to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -105,11 +105,11 @@ def show_below_value(code, value):
 #show only values between two values
 def show_between_values(code, value):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only values between two values in the boxplot by setting the values to "+value+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Show only values between two values in the boxplot by setting the values to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -117,11 +117,11 @@ def show_between_values(code, value):
 #show only one category
 def show_one_category(code, category):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only one category in the boxplot by setting the category to "+category+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Show only one category in the boxplot by setting the category to "+category+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -129,11 +129,11 @@ def show_one_category(code, category):
 #change chart type
 def change_chart_type(code, chart_type):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Change the chart type to "+chart_type+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Change the chart type to "+chart_type+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -141,11 +141,22 @@ def change_chart_type(code, chart_type):
 #chage chart type to better fit the data given no chart type
 def change_chart_type_better_fit(code, nothing):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Change the chart type to better fit the data and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Change the chart type to better fit the data and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+      ]
+    )
+    return completion.choices[0].message
+
+def other(code, message):
+    completion = client.chat.completions.create(
+      model="gpt-4o",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
+        {"role": "user", "content": message + ". and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code: " + code}
       ]
     )
     return completion.choices[0].message
@@ -188,7 +199,7 @@ def extract_code_v2(chatcompletionmessage):
     
 #categorice function given natural language to code
 def categorize(text):
-    textmessage = """Classify the given natural language into one of the following categories: change_color, highlight, zoom, reorder, add_data, show_above_value, show_below_value, show_between_values, show_one_category, change_chart_type, change_chart_type_better_fit. Here are some examples for the classification:         ["Change the color of the chart to green", "change_color"],
+    textmessage = """Classify the given natural language into one of the following categories: change_color, highlight, zoom, reorder, add_data, show_above_value, show_below_value, show_between_values, show_one_category, change_chart_type, change_chart_type_better_fit and other. Here are some examples for the classification:         ["Change the color of the chart to green", "change_color"],
         ["Highlight the 'inland' data", "highlight"],
         ["Zoom in on the boxplot", "zoom"],
         ["Reorder the data in the boxplot", "reorder"],
@@ -199,10 +210,11 @@ def categorize(text):
         ["Show only one category", "show_one_category"],
         ["Change the chart type to pie", "change_chart_type"],
         ["Change the chart type to better fit the data", "change_chart_type_better_fit"]
+        ["change the size of the bars in the bar chart to stretch over 2 years instead of 5", "other"]
         Here is the given natural language: """+text+". Just respond with the category of the given natural language."
     
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to categorize the given natural language."},
@@ -211,10 +223,18 @@ def categorize(text):
     )
     return completion.choices[0].message
 
+def extract_category(chatcompletionmessage):
+    category = chatcompletionmessage.content
+    #match1 = re.search(patternCode, reversed_txt, re.DOTALL)
+    category = re.search( r'content=(.*?)role=', category)
+    return category
+
 
 def extract_information(text):  #subject to change
-    textmessage = """extract the information needed to change the code from the given natural Language. the categories are change_color, highlight, zoom, reorder, add_data, show_above_value, show_below_value, show_between_values, show_one_category, change_chart_type, change_chart_type_better_fit. Here are some examples:
-      ["Highlight the 'inland' data", "inland"],
+    textmessage = """extract the information needed to change the code from the given natural Language. the categories are change_color, highlight, zoom, reorder, add_data, show_above_value, show_below_value, show_between_values, show_one_category, change_chart_type, change_chart_type_better_fit and other. Here are some examples:
+      ["I want a bar chart with bars that transition in color from red on the left to blue on the right.", "transition from red on the left to blue on the right"],
+      a second example for change_color: ["Change the color of the chart to green", "green"],
+      ["highlight the housing median ages of 20-30 by making them green", "housing median ages of 20-30 by making them green"],
       ["Zoom in on the boxplot", "zoom"],
       ["Reorder the data in the boxplot in this order: NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN", "NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN"],
       ["Add this data point to the chart: Munich, 1.5 million inhabitnats, 25000sqm, 4000€ average housing spendings", "Munich, 1.5 million inhabitnats, 25000sqm, 4000€ average housing spendings"],
@@ -223,10 +243,11 @@ def extract_information(text):  #subject to change
       ["Show only values between housing cost of 3000 and 4000", "3000 and 4000"],
       ["Show only Near Bay", "Near Bay"],
       ["Change the chart type to pie", "pie"],
+      ["Change the chart type to better fit the data", "better fit the data"]
       Here is the given natural language: """+text+". Just respond with the information needed to change the code of the given natural language."
     
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to categorize the given natural language."},
@@ -234,6 +255,13 @@ def extract_information(text):  #subject to change
       ]
     )
     return completion.choices[0].message
+
+def extract_information_from_message(chatcompletionmessage):
+    information = chatcompletionmessage.content
+    #match1 = re.search(patternCode, reversed_txt, re.DOTALL)
+    information = re.search( r'content=(.*?)role=', information)
+    return information
+
 
 #print(extract_code(str(higlighting(code, higlitght))))
 #print(extract_code(str(change_color(code, color))))
