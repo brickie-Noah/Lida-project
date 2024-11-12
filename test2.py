@@ -19,8 +19,7 @@ category = "INLAND"
 
 #highghlithing in the given code
 def higlighting(code, higlitght):
-    completion = client.chat.completions.create(
-    model="gpt-4-turbo",
+    completion = client.chat.completions.create(    model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
@@ -32,7 +31,7 @@ def higlighting(code, higlitght):
 #changing the color of the chart
 def change_color(code, color):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
@@ -44,7 +43,7 @@ def change_color(code, color):
 #zooming in the chart
 def zooming(code, size):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
@@ -56,7 +55,7 @@ def zooming(code, size):
 #reordering data
 def reorder_data(code, order):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
@@ -69,7 +68,7 @@ def reorder_data(code, order):
 #add data
 def add_data(code, data):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
@@ -81,7 +80,7 @@ def add_data(code, data):
 #show only values above a certain value
 def show_above_value(code, value):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
@@ -93,7 +92,7 @@ def show_above_value(code, value):
 #show only values below a certain value
 def show_below_value(code, value):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
@@ -105,7 +104,7 @@ def show_below_value(code, value):
 #show only values between two values
 def show_between_values(code, value):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
@@ -117,7 +116,7 @@ def show_between_values(code, value):
 #show only one category
 def show_one_category(code, category):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
@@ -129,7 +128,7 @@ def show_one_category(code, category):
 #change chart type
 def change_chart_type(code, chart_type):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
@@ -141,7 +140,7 @@ def change_chart_type(code, chart_type):
 #chage chart type to better fit the data given no chart type
 def change_chart_type_better_fit(code):
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
@@ -192,7 +191,7 @@ def categorize(text):
         Here is the given natural language: """+text+". Just respond with the category of the given natural language."
     
     completion = client.chat.completions.create(
-      model="gpt-4-turbo",
+      model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to categorize the given natural language."},
@@ -200,6 +199,32 @@ def categorize(text):
       ]
     )
     return completion.choices[0].message
+
+def additional_information(text, category):
+    textmessage = """Given the natural language, provide additional information about the code. Here are some examples for the additional information:
+      [category "highlight",needed information "category", respond example "INLAND"],
+      [category "change_color",needed information "color", respod example "green"],
+      [category "zooming",needed information "size", respond example "500x300"],
+      [category "reorder_data",needed information "order", example "['NEAR BAY', 'INLAND', 'NEAR OCEAN', 'ISLAND', '<1H OCEAN']"],
+      [category "add_data",needed information "data", example "{'ocean_proximity': ['NEAR BAY', 'INLAND', 'NEAR OCEAN', 'ISLAND', '<1H OCEAN'], 'median_income': [50000, 60000, 70000, 80000, 90000]}"],
+      [category "show_above_value",needed information "value", example "10"],
+      [category "show_below_value",needed information "value", example "10"],
+      [category "show_between_values",needed information "value", example "5 and 10"],
+      [category "show_one_category",needed information "category", example "INLAND"],
+      [category "change_chart_type",needed information "chart_type", example "pie"],
+      [category "change_chart_type_better_fit",needed information "no additional information", example "better fit"]
+      Here is the given natural language: """+text+" and the given category "+category+". Only respond the information you find in the given natural language in the same Format as the respond example."
+    
+    completion = client.chat.completions.create(
+      model="gpt-4o",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to extract additional information of the given natural language."},
+        {"role": "user", "content": textmessage}
+      ]
+    )
+    return completion.choices[0].message
+
 
 
 #print(extract_code(str(higlighting(code, higlitght))))
@@ -213,4 +238,10 @@ def categorize(text):
 #print(extract_code(str(show_one_category(code, category))))
 #print(extract_code(str(change_chart_type(code, "pie"))))
 #print(extract_code(str(change_chart_type_better_fit(code))))
-print(categorize("Make one category stand out in the boxplot."))
+print(categorize("Make the category Near_Bay stand out in the boxplot."))
+print(additional_information("Make the Bar NEAR_BAY stand out in the boxplot.", "highlight"))
+print(additional_information("Change the color of the chart to green", "change_color"))
+print(additional_information("Zoom in on the boxplot to the size of 200x100", "zooming"))
+#print(additional_information("Reorder the data in the boxplot", "reorder_data"))
+#print(additional_information("Add data to the chart", "add_data"))
+print(additional_information("Show only values above the value 30", "show_above_value"))
