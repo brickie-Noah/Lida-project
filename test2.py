@@ -19,11 +19,12 @@ category = "INLAND"
 
 #highghlithing in the given code
 def higlighting(code, higlitght):
-    completion = client.chat.completions.create(    model="gpt-4o",
+    completion = client.chat.completions.create(
+    model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Change this altaircode that it higlightes the "+ higlitght +" data and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Change this altaircode that it higlightes the "+ higlitght +" data and, when using altair code change bin to false and make sure the operator precedence is correct use parantheses when needed, begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -35,7 +36,7 @@ def change_color(code, color):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Change the color in this altaircode of the chart to "+color+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Change the color in this altaircode of the chart to "+color+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -47,7 +48,7 @@ def zooming(code, size):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Zoom in on the boxplot by setting the width to"+size+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Zoom in on the boxplot by setting the width to"+size+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -59,7 +60,7 @@ def reorder_data(code, order):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Reorder the data in the boxplot by setting the order of the categories to "+order+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Reorder the data in the boxplot by setting the order of the categories to "+order+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -72,7 +73,7 @@ def add_data(code, data):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Add the data "+ data + " to the chart. Begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Add the data "+ data + " to the chart. Begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -84,7 +85,7 @@ def show_above_value(code, value):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only values above a certain value in the boxplot by setting the value to "+value+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Show only values above a certain value in the boxplot by setting the value to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -96,7 +97,7 @@ def show_below_value(code, value):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only values below a certain value in the boxplot by setting the value to "+value+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Show only values below a certain value in the boxplot by setting the value to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -108,7 +109,7 @@ def show_between_values(code, value):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only values between two values in the boxplot by setting the values to "+value+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Show only values between two values in the boxplot by setting the values to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -120,7 +121,7 @@ def show_one_category(code, category):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only one category in the boxplot by setting the category to "+category+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Show only one category in the boxplot by setting the category to "+category+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -132,19 +133,30 @@ def change_chart_type(code, chart_type):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Change the chart type to "+chart_type+" and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Change the chart type to "+chart_type+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
 
 #chage chart type to better fit the data given no chart type
-def change_chart_type_better_fit(code):
+def change_chart_type_better_fit(code, nothing):
     completion = client.chat.completions.create(
       model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Change the chart type to better fit the data and begin the code with 'code:' for this altair code:"+code}
+        {"role": "user", "content": "Change the chart type to better fit the data and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+      ]
+    )
+    return completion.choices[0].message
+
+def other(code, message):
+    completion = client.chat.completions.create(
+      model="gpt-4o",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
+        {"role": "user", "content": message + ". and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code: " + code}
       ]
     )
     return completion.choices[0].message
@@ -163,21 +175,31 @@ def extract_code_v2(chatcompletionmessage):
     # Reverse the text
     reversed_txt = txt[::-1]
     # Pattern to find the last occurrence of the reversed "code:" followed by the reversed "chart = plot(data)"
-    # pattern = r"\)atad\(tolp = trahc(.*?)\:edoc"
-    pattern = r"\)atad\(tolp = trahc(.*?)nohtyp```"
+    patternCode = r"\)atad\(tolp = trahc(.*?)\:edoc"
+    # Pattern to find the last occurrence of the reversed "```python" followed by the reversed "chart = plot(data)"
+    patternPython = r"\)atad\(tolp = trahc(.*?)nohtyp```"
     # Find all matches
-    matches = re.findall(pattern, reversed_txt, re.DOTALL)
-    # Reverse the matches to get the original order and take the first one as it corresponds to the last match in the original text
-    x = [match[::-1] for match in matches]
-    # Print the last match
-    if x:
-      return(x[0])
+    match1 = re.search(patternCode, reversed_txt, re.DOTALL)
+    match2 = re.search(patternPython, reversed_txt, re.DOTALL)
+    # Determine the smallest match
+    if match1 and match2:
+        # Compare lengths of matched substrings
+        if len(match1.group(1)) < len(match2.group(1)):
+            smallest_match = match1.group(1)
+        else:
+            smallest_match = match2.group(1)
+    elif match1:
+        smallest_match = match1.group(1)
+    elif match2:
+        smallest_match = match2.group(1)
     else:
-      return("No match found")
+        return "No match found"
+    # Reverse the smallest match to get the original order
+    return smallest_match[::-1]
     
 #categorice function given natural language to code
 def categorize(text):
-    textmessage = """Classify the given natural language into one of the following categories: change_color, highlight, zoom, reorder, add_data, show_above_value, show_below_value, show_between_values, show_one_category, change_chart_type, change_chart_type_better_fit. Here are some examples for the classification:         ["Change the color of the chart to green", "change_color"],
+    textmessage = """Classify the given natural language into one of the following categories: change_color, highlight, zoom, reorder, add_data, show_above_value, show_below_value, show_between_values, show_one_category, change_chart_type, change_chart_type_better_fit and other. Here are some examples for the classification:         ["Change the color of the chart to green", "change_color"],
         ["Highlight the 'inland' data", "highlight"],
         ["Zoom in on the boxplot", "zoom"],
         ["Reorder the data in the boxplot", "reorder"],
@@ -188,6 +210,7 @@ def categorize(text):
         ["Show only one category", "show_one_category"],
         ["Change the chart type to pie", "change_chart_type"],
         ["Change the chart type to better fit the data", "change_chart_type_better_fit"]
+        ["change the size of the bars in the bar chart to stretch over 2 years instead of 5", "other"]
         Here is the given natural language: """+text+". Just respond with the category of the given natural language."
     
     completion = client.chat.completions.create(
@@ -200,31 +223,44 @@ def categorize(text):
     )
     return completion.choices[0].message
 
-def additional_information(text, category):
-    textmessage = """Given the natural language, provide additional information about the code. Here are some examples for the additional information:
-      [category "highlight",needed information "category", respond example "INLAND"],
-      [category "change_color",needed information "color", respod example "green"],
-      [category "zooming",needed information "size", respond example "500x300"],
-      [category "reorder_data",needed information "order", example "['NEAR BAY', 'INLAND', 'NEAR OCEAN', 'ISLAND', '<1H OCEAN']"],
-      [category "add_data",needed information "data", example "{'ocean_proximity': ['NEAR BAY', 'INLAND', 'NEAR OCEAN', 'ISLAND', '<1H OCEAN'], 'median_income': [50000, 60000, 70000, 80000, 90000]}"],
-      [category "show_above_value",needed information "value", example "10"],
-      [category "show_below_value",needed information "value", example "10"],
-      [category "show_between_values",needed information "value", example "5 and 10"],
-      [category "show_one_category",needed information "category", example "INLAND"],
-      [category "change_chart_type",needed information "chart_type", example "pie"],
-      [category "change_chart_type_better_fit",needed information "no additional information", example "better fit"]
-      Here is the given natural language: """+text+" and the given category "+category+". Only respond the information you find in the given natural language in the same Format as the respond example."
+def extract_category(chatcompletionmessage):
+    category = chatcompletionmessage.content
+    #match1 = re.search(patternCode, reversed_txt, re.DOTALL)
+    category = re.search( r'content=(.*?)role=', category)
+    return category
+
+
+def extract_information(text):  #subject to change
+    textmessage = """extract the information needed to change the code from the given natural Language. the categories are change_color, highlight, zoom, reorder, add_data, show_above_value, show_below_value, show_between_values, show_one_category, change_chart_type, change_chart_type_better_fit and other. Here are some examples:
+      ["I want a bar chart with bars that transition in color from red on the left to blue on the right.", "transition from red on the left to blue on the right"],
+      a second example for change_color: ["Change the color of the chart to green", "green"],
+      ["highlight the housing median ages of 20-30 by making them green", "housing median ages of 20-30 by making them green"],
+      ["Zoom in on the boxplot", "zoom"],
+      ["Reorder the data in the boxplot in this order: NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN", "NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN"],
+      ["Add this data point to the chart: Munich, 1.5 million inhabitnats, 25000sqm, 4000€ average housing spendings", "Munich, 1.5 million inhabitnats, 25000sqm, 4000€ average housing spendings"],
+      ["Show only values above a housing cost of 3000", "3000"],
+      ["Show only values below a housing cost of 3000", "3000"],
+      ["Show only values between housing cost of 3000 and 4000", "3000 and 4000"],
+      ["Show only Near Bay", "Near Bay"],
+      ["Change the chart type to pie", "pie"],
+      ["Change the chart type to better fit the data", "better fit the data"]
+      Here is the given natural language: """+text+". Just respond with the information needed to change the code of the given natural language."
     
     completion = client.chat.completions.create(
       model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
-        {"role": "system", "content": "You are a helpful assistant designed to extract additional information of the given natural language."},
+        {"role": "system", "content": "You are a helpful assistant designed to categorize the given natural language."},
         {"role": "user", "content": textmessage}
       ]
     )
     return completion.choices[0].message
 
+def extract_information_from_message(chatcompletionmessage):
+    information = chatcompletionmessage.content
+    #match1 = re.search(patternCode, reversed_txt, re.DOTALL)
+    information = re.search( r'content=(.*?)role=', information)
+    return information
 
 
 #print(extract_code(str(higlighting(code, higlitght))))

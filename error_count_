@@ -1,0 +1,15 @@
+all errors that we get from gpt and also with the errors of our extract_code_v2
+
+valid: 17
+
+
+acutual error from gpt inside the code: 
+    typo: 1
+    renamed something to something that isnt valid: 1
+    missing half of the code: 1
+    i dont even know how that happened: 1
+
+extract_code_v2 errors
+    code: 1 onenote
+    no match found: 2 (fixed?)
+    no match found -> multiple identical widgets: 1 (i dont think its fixed cause the layout should look really bad now)
