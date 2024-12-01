@@ -48,7 +48,7 @@ def zooming(code, size):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Zoom in on the boxplot by setting the width to"+size+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Zoom in on the chart, by zooming in to "+size+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -60,7 +60,7 @@ def reorder_data(code, order):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Reorder the data in the boxplot by setting the order of the categories to "+order+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Reorder the data in the chart by setting the order of the categories to "+order+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -85,7 +85,7 @@ def show_above_value(code, value):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only values above a certain value in the boxplot by setting the value to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Show only values above a certain value in the chart by setting the value to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -97,7 +97,7 @@ def show_below_value(code, value):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only values below a certain value in the boxplot by setting the value to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Show only values below a certain value in the chart by setting the value to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -109,7 +109,7 @@ def show_between_values(code, value):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only values between two values in the boxplot by setting the values to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Show only values between two values in the chart by setting the values to "+value+", make sure the data is case-insensitive and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -121,7 +121,7 @@ def show_one_category(code, category):
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only one category in the boxplot by setting the category to "+category+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Show only one category in the chart by setting the category to "+category+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
       ]
     )
     return completion.choices[0].message
@@ -201,7 +201,7 @@ def extract_code_v2(chatcompletionmessage):
 def categorize(text):
     textmessage = """Classify the given natural language into one of the following categories: change_color, highlight, zoom, reorder, add_data, show_above_value, show_below_value, show_between_values, show_one_category, change_chart_type, change_chart_type_better_fit and other. Here are some examples for the classification:         ["Change the color of the chart to green", "change_color"],
         ["Highlight the 'inland' data", "highlight"],
-        ["Zoom in on the boxplot", "zoom"],
+        ["Zoom in on the upper right corner of the boxplot", "zoom"],
         ["Reorder the data in the boxplot", "reorder"],
         ["Add data to the chart", "add_data"],
         ["Show only values above a certain value", "show_above_value"],
@@ -235,7 +235,7 @@ def extract_information(text):  #subject to change
       ["I want a bar chart with bars that transition in color from red on the left to blue on the right.", "transition from red on the left to blue on the right"],
       a second example for change_color: ["Change the color of the chart to green", "green"],
       ["highlight the housing median ages of 20-30 by making them green", "housing median ages of 20-30 by making them green"],
-      ["Zoom in on the boxplot", "zoom"],
+      ["Zoom in on the upper right corner of the boxplot", "upper right corner"],
       ["Reorder the data in the boxplot in this order: NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN", "NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN"],
       ["Add this data point to the chart: Munich, 1.5 million inhabitnats, 25000sqm, 4000€ average housing spendings", "Munich, 1.5 million inhabitnats, 25000sqm, 4000€ average housing spendings"],
       ["Show only values above a housing cost of 3000", "3000"],
@@ -274,10 +274,10 @@ def extract_information_from_message(chatcompletionmessage):
 #print(extract_code(str(show_one_category(code, category))))
 #print(extract_code(str(change_chart_type(code, "pie"))))
 #print(extract_code(str(change_chart_type_better_fit(code))))
-print(categorize("Make the category Near_Bay stand out in the boxplot."))
-print(additional_information("Make the Bar NEAR_BAY stand out in the boxplot.", "highlight"))
-print(additional_information("Change the color of the chart to green", "change_color"))
-print(additional_information("Zoom in on the boxplot to the size of 200x100", "zooming"))
-#print(additional_information("Reorder the data in the boxplot", "reorder_data"))
-#print(additional_information("Add data to the chart", "add_data"))
-print(additional_information("Show only values above the value 30", "show_above_value"))
+#print(categorize("Make the category Near_Bay stand out in the boxplot."))
+# print(additional_information("Make the Bar NEAR_BAY stand out in the boxplot.", "highlight"))
+# print(additional_information("Change the color of the chart to green", "change_color"))
+# print(additional_information("Zoom in on the boxplot to the size of 200x100", "zooming"))
+# #print(additional_information("Reorder the data in the boxplot", "reorder_data"))
+# #print(additional_information("Add data to the chart", "add_data"))
+# print(additional_information("Show only values above the value 30", "show_above_value"))
