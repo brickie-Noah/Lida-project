@@ -39,86 +39,51 @@ if 'data' not in st.session_state:
     st.session_state.data = None
 if 'codes' not in st.session_state:
     st.session_state.codes = []
-if 'number_of_edits' not in st.session_state:
-    st.session_state.number_of_edits = 0
+if 'backButton' not in st.session_state:
+    st.session_state.backButton = False
 
-#
+    # some examples for the user to see what he can do with the code:
+        # reorder the bars to: NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN        
+        # make the bars green yellow orange red and purple
 
-#------------------- can be used to debug the code with specific buttons for the specific categories -------------------#
-# # Initialize button states
-# if 'button_states' not in st.session_state:
-#     st.session_state.button_states = {
-#         'reorder': False,
-#         'highlighting': False,
-#         'change_color': False,
-#         'zooming': False,
-#         'add_data': False,
-#         'show_above_value': False,
-#         'show_below_value': False,
-#         'show_between_values': False,
-#         'show_one_category': False,
-#         'change_chart_type' : False,
-#         'change_chart_type_better_fit': False
-#     }
-# # Function to handle button clicks
-# def click_button(action):
-#     for key in st.session_state.button_states.keys():
-#         st.session_state.button_states[key] = (key == action)
-
-# def open_buttons(code):
-#     # Create buttons in columns
-#     buttons = list()
-#     buttons = list(st.session_state.button_states.keys())
-#     columns = st.columns(len(buttons))
-
-#     for idx, button in enumerate(buttons):
-#         with columns[idx]:
-#             if st.button(button):# , key=button):
-#                 click_button(button)
-  
-#     # Perform actions based on button states
-#     for action, state in st.session_state.button_states.items():
-#         if state:
-#             edit(code, action)
-
-
-
-# reorder the bars to: NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN        
-# make the bars green yellow orange red and purple
+# createsand handles the back button, creates forms for user input and extracts the categorie and the information of the user input
 def user_edit_input():
+    if not st.session_state.backButton:
+        back = st.button("back", disabled=(len(st.session_state.codes) < 2))
+        st.session_state.backButton = True
+        if back:
+            st.session_state.codes.pop()
+            render_code(st.session_state.codes[-1], None, None, True)
+
     st.write("Enter your edit here")
-    #try:
-    with st.form("my_form", clear_on_submit=True, border=False):
-        input_value = st.text_input("Enter your edit here")
-        submitted = st.form_submit_button("submit")
-        if submitted:
-            if input_value:
-                edit_type = test2.categorize(input_value) #here u get a chatcompletionmessage 
-                if edit_type.content == "other":
-                    edit(edit_type.content, input_value)
-                else: 
-                    edit_value = test2.extract_information(input_value)
-                    edit(edit_type.content, edit_value.content)
-    #except Exception as e:
-    #    st.session_state.number_of_edits += 1
-    #    user_edit_input()
+    try:
+        with st.form("my_form", clear_on_submit=True, border=False):
+            input_value = st.text_input("Enter your edit here")
+            submitted = st.form_submit_button("submit")
+            if submitted:
+                if input_value:
+                    edit_type = test2.categorize(input_value) #here u get a chatcompletionmessage 
+                    if edit_type.content == "other":
+                        edit(edit_type.content, input_value)
+                    else: 
+                        edit_value = test2.extract_information(input_value)
+                        edit(edit_type.content, edit_value.content)
+    except Exception as e:
+       user_edit_input()
     return None
 
 
+# takes the inputed data and decides which edit function to use, also extracts the graph code from the chatgpt response
 def edit(edit_type=None, input_value=None):
-    st.session_state.number_of_edits += 1
     # Function to handle input and generate new code
     def handle_input(placeholder, code_generation_func, input_value):
-        #user_input = st.text_input(placeholder, value=input_value or "", key=st.session_state.number_of_edits+20000)
         st.write(placeholder)
-        st.write("input value: ",input_value)
-        if input_value:
-            #return [code_generation_func(old_code, user_input), user_input]
-            return [code_generation_func(st.session_state.codes[-1], input_value), input_value]
+        if input_value != None:
+            Summary = str(st.session_state.summary)
+            return [code_generation_func(st.session_state.codes[-1], input_value, Summary), input_value]
         return None
 
     newcode = None
-
     # Process the new edit type and generate the new code
     if edit_type == None:
         st.subheader("no edit type")
@@ -129,8 +94,8 @@ def edit(edit_type=None, input_value=None):
         input = handle_input("highlight (what do you want to highlight?)", test2.higlighting, input_value)
     elif edit_type == "change_color":
         input = handle_input("change color data (what color do you want?)", test2.change_color, input_value)
-    elif edit_type == "zooming":
-        input = handle_input("zooming (what width do you want?)", test2.zooming, input_value)
+    elif edit_type == "zoom":
+        input = handle_input("zooming", test2.zooming, input_value)
     elif edit_type == "add_data":
         input = handle_input("add data (what data do you want to add?)", test2.add_data, input_value)
     elif edit_type == "show_above_value":
@@ -149,10 +114,11 @@ def edit(edit_type=None, input_value=None):
         input = handle_input("other (experimental)", test2.other, input_value)
     else:
         return
+    
+
 
     if input is not None:
         newcode = input[0]
-        input_value = input[1]
 
     if newcode is not None:
         # get the code from the chatgpt response
@@ -160,43 +126,37 @@ def edit(edit_type=None, input_value=None):
         render_code(newcode, edit_type, input_value)
 
     
-    
-def render_code(newcode, edit_type, input_value):    
+# renders the chart from the code, if the code is not working edit is called which asks gpt tp make a new code
+def render_code(newcode, edit_type, input_value, back_button=False):    
     if newcode == "No match found":
         edit(edit_type, input_value)
     else:
         try:
-            exec_locals = {}
-            exec(newcode, globals(), exec_locals)
-            # Access the plot function from the local variables captured by exec()
-            plot = exec_locals['plot']
+                exec_locals = {}
+                exec(newcode, globals(), exec_locals)
+                # Access the plot function from the local variables captured by exec()
+                plot = exec_locals['plot']
 
-            chart = plot(st.session_state.data)
-            st.altair_chart(chart, use_container_width=True)
-            st.session_state.codes.append(newcode)
-            with st.expander("see new code"):
-                st.code(newcode)
+                chart = plot(st.session_state.data)
+                st.altair_chart(chart, use_container_width=True)
+                if not back_button:
+                    st.session_state.codes.append(newcode)
+                with st.expander("see new code"):
+                    st.code(newcode)
         except Exception as e:
             edit(edit_type, input_value)
 
 
-
+#creates the first diagramm from lida and also handles the back button
 def createDiagramm():
-    
     library = "altair"
     textgen_config = TextGenerationConfig(n=1, temperature=0.2, model="gpt-4-turbo", use_cache=True)
     summary = st.session_state.summary
     print(summary)
     charts = lida.visualize(summary, goal=st.session_state.goals[st.session_state.goalNumber], textgen_config=textgen_config, library=library)  
 
-        
-        #altair error fix 
-        #this way would be way better for perfomance ut I didnt get it to run
-        #charts[0].spec['data'] = {"url": path_to_save}
-        #this way loads data directly and causes lots of memory usage > lag
     data_dict = st.session_state.data.to_dict(orient='records')
     charts[0].spec['data'] = {"values": data_dict}
-
 
         #display the chart    
     original = st.vega_lite_chart(charts[0].spec, use_container_width=True)
