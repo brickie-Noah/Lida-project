@@ -87,21 +87,21 @@ if 'number_of_edits' not in st.session_state:
 # make the bars green yellow orange red and purple
 def user_edit_input():
     st.write("Enter your edit here")
-    try:
-        with st.form("my_form", clear_on_submit=True, border=False):
-            input_value = st.text_input("Enter your edit here")
-            submitted = st.form_submit_button("submit")
-            if submitted:
-                if input_value:
-                    edit_type = test2.categorize(input_value) #here u get a chatcompletionmessage 
-                    if edit_type.content == "other":
-                        edit(edit_type.content, input_value)
-                    else: 
-                        edit_value = test2.extract_information(input_value)
-                        edit(edit_type.content, edit_value.content)
-    except Exception as e:
-        st.session_state.number_of_edits += 1
-        user_edit_input()
+    #try:
+    with st.form("my_form", clear_on_submit=True, border=False):
+        input_value = st.text_input("Enter your edit here")
+        submitted = st.form_submit_button("submit")
+        if submitted:
+            if input_value:
+                edit_type = test2.categorize(input_value) #here u get a chatcompletionmessage 
+                if edit_type.content == "other":
+                    edit(edit_type.content, input_value)
+                else: 
+                    edit_value = test2.extract_information(input_value)
+                    edit(edit_type.content, edit_value.content)
+    #except Exception as e:
+    #    st.session_state.number_of_edits += 1
+    #    user_edit_input()
     return None
 
 
@@ -186,6 +186,7 @@ def createDiagramm():
     library = "altair"
     textgen_config = TextGenerationConfig(n=1, temperature=0.2, model="gpt-4-turbo", use_cache=True)
     summary = st.session_state.summary
+    print(summary)
     charts = lida.visualize(summary, goal=st.session_state.goals[st.session_state.goalNumber], textgen_config=textgen_config, library=library)  
 
         
@@ -210,6 +211,12 @@ def createDiagramm():
         st.session_state.number_of_edits = st.session_state.number_of_edits - 1
         render_code(st.session_state.codes[-1], None, None)
 
+    #refresh = st.button("refresh")
+    #if refresh:
+        # Ursprünglichen Chart wiederherstellen
+        #st.session_state.codes = st.session_state.codes[0]
+        #render_code(st.session_state.codes[0], None, None)
+        
     user_edit_input()
 
 

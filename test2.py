@@ -1,4 +1,4 @@
-import os
+import os 
 from openai import OpenAI
 from dotenv import load_dotenv
 import re
@@ -228,7 +228,7 @@ def extract_category(chatcompletionmessage):
     #match1 = re.search(patternCode, reversed_txt, re.DOTALL)
     category = re.search( r'content=(.*?)role=', category)
     return category
-
+# streamlit run C://Users/levid/Desktop/Uni/Master/WiSe2324/Projekt1/Lida-project/app.py
 
 def extract_information(text):  #subject to change
     textmessage = """extract the information needed to change the code from the given natural Language. the categories are change_color, highlight, zoom, reorder, add_data, show_above_value, show_below_value, show_between_values, show_one_category, change_chart_type, change_chart_type_better_fit and other. Here are some examples:
