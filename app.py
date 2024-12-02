@@ -39,7 +39,8 @@ if 'data' not in st.session_state:
     st.session_state.data = None
 if 'codes' not in st.session_state:
     st.session_state.codes = []
-
+if 'backButton' not in st.session_state:
+    st.session_state.backButton = False
 
     # some examples for the user to see what he can do with the code:
         # reorder the bars to: NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN        
@@ -47,11 +48,12 @@ if 'codes' not in st.session_state:
 
 # createsand handles the back button, creates forms for user input and extracts the categorie and the information of the user input
 def user_edit_input():
-    back = st.button("back", disabled=(len(st.session_state.codes) < 2))
-    if back:
-        st.session_state.codes.pop()
-        render_code(st.session_state.codes[-1], None, None, True)
-        st.write(st.session_state.codes)
+    if not st.session_state.backButton:
+        back = st.button("back", disabled=(len(st.session_state.codes) < 2))
+        st.session_state.backButton = True
+        if back:
+            st.session_state.codes.pop()
+            render_code(st.session_state.codes[-1], None, None, True)
 
     st.write("Enter your edit here")
     try:
@@ -65,12 +67,9 @@ def user_edit_input():
                         edit(edit_type.content, input_value)
                     else: 
                         edit_value = test2.extract_information(input_value)
-                        #st.write("edit type: ", edit_type.content)
-                        #st.write("edit value: ", edit_value.content)
                         edit(edit_type.content, edit_value.content)
     except Exception as e:
-
-        user_edit_input()
+       user_edit_input()
     return None
 
 
@@ -79,12 +78,12 @@ def edit(edit_type=None, input_value=None):
     # Function to handle input and generate new code
     def handle_input(placeholder, code_generation_func, input_value):
         st.write(placeholder)
-        if input_value:
-            return [code_generation_func(st.session_state.codes[-1], input_value), input_value]
+        if input_value != None:
+            Summary = str(st.session_state.summary)
+            return [code_generation_func(st.session_state.codes[-1], input_value, Summary), input_value]
         return None
 
     newcode = None
-
     # Process the new edit type and generate the new code
     if edit_type == None:
         st.subheader("no edit type")
@@ -120,7 +119,6 @@ def edit(edit_type=None, input_value=None):
 
     if input is not None:
         newcode = input[0]
-
 
     if newcode is not None:
         # get the code from the chatgpt response

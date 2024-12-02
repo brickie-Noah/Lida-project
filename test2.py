@@ -18,145 +18,145 @@ data = "{'ocean_proximity': ['NEAR BAY', 'INLAND', 'NEAR OCEAN', 'ISLAND', '<1H 
 category = "INLAND"
 
 #highghlithing in the given code
-def higlighting(code, higlitght):
+def higlighting(code, higlitght, summary):
     completion = client.chat.completions.create(
     model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Change this altaircode that it higlightes the "+ higlitght +" data and, when using altair code change bin to false and make sure the operator precedence is correct use parantheses when needed, begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Change this altaircode that it higlightes the "+ higlitght +" data and, when using altair code change bin to false and make sure the operator precedence is correct use parantheses when needed, begin the code with 'code:', end it with 'chart = plot(data)' for this altair code: "+code +" heres also a summary of the data for reference: "+ summary}
       ]
     )
     return completion.choices[0].message
 
 #changing the color of the chart
-def change_color(code, color):
+def change_color(code, color, summary):
     completion = client.chat.completions.create(
       model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Change the color in this altaircode of the chart to "+color+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Change the color in this altaircode of the chart to "+color+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code +" heres also a summary of the data for reference: "+summary}
       ]
     )
     return completion.choices[0].message
 
 #zooming in the chart
-def zooming(code, size):
+def zooming(code, size, summary):
     completion = client.chat.completions.create(
       model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Zoom in on the chart, by zooming in to "+size+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Zoom in on the chart, by zooming in to "+size+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code +" heres also a summary of the data for reference: "+summary}
       ]
     )
     return completion.choices[0].message
 
 #reordering data
-def reorder_data(code, order):
+def reorder_data(code, order, summary):
     completion = client.chat.completions.create(
       model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Reorder the data in the chart by setting the order of the categories to "+order+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Reorder the data in the chart by setting the order of the categories to "+order+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code +" heres also a summary of the data for reference: "+summary}
       ]
     )
     return completion.choices[0].message
 
 
 #add data
-def add_data(code, data):
+def add_data(code, data, summary):
     completion = client.chat.completions.create(
       model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Add the data "+ data + " to the chart. Begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Add the data "+ data + " to the chart. Begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code +" heres also a summary of the data for reference: "+summary}
       ]
     )
     return completion.choices[0].message
 
 #show only values above a certain value
-def show_above_value(code, value):
+def show_above_value(code, value, summary):
     completion = client.chat.completions.create(
       model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only values above a certain value in the chart by setting the value to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Show only values above a certain value in the chart by setting the value to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code +" heres also a summary of the data for reference: "+summary}
       ]
     )
     return completion.choices[0].message
 
 #show only values below a certain value
-def show_below_value(code, value):
+def show_below_value(code, value, summary):
     completion = client.chat.completions.create(
       model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only values below a certain value in the chart by setting the value to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Show only values below a certain value in the chart by setting the value to "+value+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code +" heres also a summary of the data for reference: "+summary}
       ]
     )
     return completion.choices[0].message
 
 #show only values between two values
-def show_between_values(code, value):
+def show_between_values(code, value, summary):
     completion = client.chat.completions.create(
       model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only values between two values in the chart by setting the values to "+value+", make sure the data is case-insensitive and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Show only values between two values in the chart by setting the values to "+value+", make sure the data is case-insensitive and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code +" heres also a summary of the data for reference: "+summary}
       ]
     )
     return completion.choices[0].message
 
 #show only one category
-def show_one_category(code, category):
+def show_one_category(code, category, summary):
     completion = client.chat.completions.create(
       model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Show only one category in the chart by setting the category to "+category+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Show only one category in the chart by setting the category to "+category+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code +" heres also a summary of the data for reference: "+summary}
       ]
     )
     return completion.choices[0].message
 
 #change chart type
-def change_chart_type(code, chart_type):
+def change_chart_type(code, chart_type, summary):
     completion = client.chat.completions.create(
       model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Change the chart type to "+chart_type+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Change the chart type to "+chart_type+" and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code +" heres also a summary of the data for reference: "+summary}
       ]
     )
     return completion.choices[0].message
 
 #chage chart type to better fit the data given no chart type
-def change_chart_type_better_fit(code, nothing):
+def change_chart_type_better_fit(code, nothing, summary):
     completion = client.chat.completions.create(
       model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": "Change the chart type to better fit the data and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code}
+        {"role": "user", "content": "Change the chart type to better fit the data and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code:"+code +" heres also a summary of the data for reference: "+summary}
       ]
     )
     return completion.choices[0].message
 
-def other(code, message):
+def other(code, message, summary):
     completion = client.chat.completions.create(
       model="gpt-4o",
       response_format={ "type": "text"},
       messages=[
         {"role": "system", "content": "You are a helpful assistant designed to change an altaire Code."},
-        {"role": "user", "content": message + ". and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code: " + code}
+        {"role": "user", "content": message + ". and begin the code with 'code:', end it with 'chart = plot(data)' for this altair code: " + code +" heres also a summary of the data for reference: "+summary}
       ]
     )
     return completion.choices[0].message
