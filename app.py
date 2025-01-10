@@ -165,11 +165,11 @@ def createDiagramm():
     with st.expander("see code"):
         st.code(charts[0].code)
 
-    back = st.button("back", disabled=(len(st.session_state.codes) < 2))
-    if back:
-        st.session_state.codes.pop()
-        st.session_state.number_of_edits = st.session_state.number_of_edits - 1
-        render_code(st.session_state.codes[-1], None, None)
+    # back = st.button("back", disabled=(len(st.session_state.codes) < 2))
+    # if back:
+    #     st.session_state.codes.pop()
+    #     st.session_state.number_of_edits = st.session_state.number_of_edits - 1
+    #     render_code(st.session_state.codes[-1], None, None)
 
     #refresh = st.button("refresh")
     #if refresh:
