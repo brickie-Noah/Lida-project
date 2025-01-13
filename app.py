@@ -48,9 +48,9 @@ if 'backButton' not in st.session_state:
 
 # createsand handles the back button, creates forms for user input and extracts the categorie and the information of the user input
 def user_edit_input():
-    if not st.session_state.backButton:
+    if len(st.session_state.codes) > 1:	
         back = st.button("back", disabled=(len(st.session_state.codes) < 2))
-        st.session_state.backButton = True
+
         if back:
             st.session_state.codes.pop()
             render_code(st.session_state.codes[-1], None, None, True)
