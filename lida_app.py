@@ -29,8 +29,8 @@ if 'data' not in st.session_state:
     st.session_state.data = None
 if 'codes' not in st.session_state:
     st.session_state.codes = []
-if 'number_of_edits' not in st.session_state:
-    st.session_state.number_of_edits = 0
+# if 'number_of_edits' not in st.session_state:
+#     st.session_state.number_of_edits = 0
 if 'specs' not in st.session_state:
     st.session_state.specs = []
 
@@ -55,7 +55,7 @@ def display_second_page():
 def createDiagramm():
     
     library = "altair"
-    textgen_config = TextGenerationConfig(n=1, temperature=0.5, model="gpt-4o", use_cache=True)
+    textgen_config = TextGenerationConfig(n=1, temperature=0.5, model="gpt-4-turbo", use_cache=True)
     summary = st.session_state.summary
     charts = lida.visualize(summary, goal=st.session_state.goals[st.session_state.goalNumber], textgen_config=textgen_config, library=library)  
 
@@ -67,46 +67,54 @@ def createDiagramm():
     data_dict = st.session_state.data.to_dict(orient='records')
     charts[0].spec['data'] = {"values": data_dict}
     #if len(st.session_state.codes) == 0:
-    try:
-        render_code(charts[0].code, st.session_state.data)
-        if len(st.session_state.codes) == 0:
-            st.session_state.codes.append(charts[0].code)
-    except Exception as e:
-        createDiagramm()
+    st.vega_lite_chart(charts[0].spec, use_container_width=True)
+    if st.session_state.codes == []:
+        st.session_state.codes.append(charts[0].code)
+        st.write("code appended from createDiagramm")
+    with st.expander("see code"):
+        st.code(charts[0].code)
+    # try:
+    #     render_code(charts[0].code, st.session_state.data)
+    #     if len(st.session_state.codes) == 0:
+    #         st.session_state.codes.append(charts[0].code)
+    # except Exception as e:
+    #     createDiagramm()
 
-    back = st.button("back", disabled=(len(st.session_state.codes) < 2))
-    if back:
-        st.session_state.codes.pop()
-        st.session_state.number_of_edits = st.session_state.number_of_edits - 1
-        render_code(st.session_state.codes[-1], None)
+    # back = st.button("back", disabled=(len(st.session_state.codes) <= 2))
+    # if back:
+    #     st.session_state.codes.pop()
+    #     #st.session_state.number_of_edits = st.session_state.number_of_edits - 1
+    #     render_code(st.session_state.codes[-1], None)
 
     user_edit_input()
     #user_edit_input()
 
 
 def user_edit_input():
-    #st.write("Enter your edit here")
+    if len(st.session_state.codes) >= 1:
+        back = st.button("back", disabled=(len(st.session_state.codes) <= 2))
+        if back:
+            st.session_state.codes.pop()
+            render_code(st.session_state.codes[-1], st.session_state.data, True)
+
     try:
         with st.form("my_form", clear_on_submit=True, border=False):
             input_value = st.text_input("Enter your edit here")
             submitted = st.form_submit_button("submit")
             if submitted:
                 if input_value:
-                    with st.expander("see old code"):
-                        st.code(st.session_state.codes[-1])
-                        st.write(st.session_state.codes)
+
                     charts = lida.edit(code=st.session_state.codes[-1], summary=st.session_state.summary, instructions=input_value, library="altair", textgen_config=TextGenerationConfig(n=1, temperature=0.5, model="gpt-4o", use_cache=True))
                     data_dict = st.session_state.data.to_dict(orient='records')
                     charts[0].spec['data'] = {"values": data_dict}
-                    render_code(charts[0].code, st.session_state.data)
-                    st.session_state.codes.append(charts[0].code)
+                    render_code(charts[0].code, st.session_state.data, False)
     except Exception as e:
-        st.session_state.number_of_edits += 1
+        #st.session_state.number_of_edits += 1
         user_edit_input()
     return None
 
 
-def render_code(code, data):
+def render_code(code, data, back_button=False):
     try:
         exec_locals = {'data': data}
         exec(code, globals(), exec_locals)
@@ -115,7 +123,8 @@ def render_code(code, data):
 
         chart = plot(data)
         st.altair_chart(chart, use_container_width=True)
-        #st.session_state.codes.append(code)
+        if back_button == False:
+            st.session_state.codes.append(code)
         with st.expander("see code"):
             st.code(code)
     except Exception as e:
