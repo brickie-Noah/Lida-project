@@ -196,6 +196,18 @@ def extract_code_v2(chatcompletionmessage):
         return "No match found"
     # Reverse the smallest match to get the original order
     return smallest_match[::-1]
+
+def translate(text):
+    textmessage = """Translate the given text to english. Here is the given text: """+text+". Just respond with the translated text. If the text is already in english, just respond with the same text."
+    completion = client.chat.completions.create(
+      model="gpt-4o",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to translate the given text to english."},
+        {"role": "user", "content": textmessage}
+      ]
+    )
+    return completion.choices[0].message
     
 #categorice function given natural language to code
 def categorize(text):
