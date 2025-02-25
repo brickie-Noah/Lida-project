@@ -62,6 +62,7 @@ def user_edit_input():
             submitted = st.form_submit_button("submit")
             if submitted:
                 if input_value:
+                    input_value = test2.translate(input_value)
                     edit_type = test2.categorize(input_value) #here u get a chatcompletionmessage 
                     if edit_type.content == "other":
                         edit(edit_type.content, input_value)
