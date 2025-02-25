@@ -209,6 +209,18 @@ def extract_code_v2(chatcompletionmessage):
         return "No match found"
     # Reverse the smallest match to get the original order
     return smallest_match[::-1]
+
+def translate(text):
+    textmessage = """Translate the given text to english. Here is the given text: """+text+". Just respond with the translated text. If the text is already in english, just respond with the same text."
+    completion = client.chat.completions.create(
+      model="gpt-4o",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to translate the given text to english."},
+        {"role": "user", "content": textmessage}
+      ]
+    )
+    return completion.choices[0].message
     
 #categorice function given natural language to code
 def categorize(text):
@@ -288,7 +300,7 @@ def extract_information_from_message(chatcompletionmessage):
 #print(extract_code(str(change_chart_type(code, "pie"))))
 #print(extract_code(str(change_chart_type_better_fit(code))))
 #print(categorize("Make the category Near_Bay stand out in the boxplot."))
-# print(additional_information("Make the Bar NEAR_BAY stand out in the boxplot.", "highlight"))
+#print(additional_information("Make the Bar NEAR_BAY stand out in the boxplot.", "highlight"))
 # print(additional_information("Change the color of the chart to green", "change_color"))
 # print(additional_information("Zoom in on the boxplot to the size of 200x100", "zooming"))
 # #print(additional_information("Reorder the data in the boxplot", "reorder_data"))
