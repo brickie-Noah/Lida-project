@@ -48,8 +48,10 @@ if 'backButton' not in st.session_state:
 
 # createsand handles the back button, creates forms for user input and extracts the categorie and the information of the user input
 def user_edit_input():
-    if len(st.session_state.codes) >= 1:	
+    if len(st.session_state.codes) >= 1:
+    #if not st.session_state.backButton:	
         back = st.button("back", disabled=(len(st.session_state.codes) <= 2))
+        st.session_state.backButton = True
 
         if back:
             st.session_state.codes.pop()
@@ -62,11 +64,13 @@ def user_edit_input():
             submitted = st.form_submit_button("submit")
             if submitted:
                 if input_value:
-                    edit_type = test2.categorize(input_value) #here u get a chatcompletionmessage 
+                    input_translated = test2.translate(input_value)
+                    #st.write(input_translated.content)
+                    edit_type = test2.categorize(input_translated.content) #here u get a chatcompletionmessage 
                     if edit_type.content == "other":
-                        edit(edit_type.content, input_value)
+                        edit(edit_type.content, input_translated.content)
                     else: 
-                        edit_value = test2.extract_information(input_value)
+                        edit_value = test2.extract_information(input_translated.content)
                         edit(edit_type.content, edit_value.content)
     except Exception as e:
        user_edit_input()
@@ -77,7 +81,7 @@ def user_edit_input():
 def edit(edit_type=None, input_value=None):
     # Function to handle input and generate new code
     def handle_input(placeholder, code_generation_func, input_value):
-        st.write(placeholder)
+        #st.write(placeholder)
         if input_value != None:
             Summary = str(st.session_state.summary)
             return [code_generation_func(st.session_state.codes[-1], input_value, Summary), input_value]

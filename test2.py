@@ -161,6 +161,19 @@ def other(code, message, summary):
     )
     return completion.choices[0].message
 
+def translate(text):
+    print("translated")
+    textmessage = """Translate the given text to english. Here is the given text: """+text+". Just respond with the translated text. If the text is already in english, just respond with the same text."
+    completion = client.chat.completions.create(
+      model="gpt-4o",
+      response_format={ "type": "text"},
+      messages=[
+        {"role": "system", "content": "You are a helpful assistant designed to translate the given text to english."},
+        {"role": "user", "content": textmessage}
+      ]
+    )
+    return completion.choices[0].message
+
 
 
 def extract_code(text):
