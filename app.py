@@ -48,9 +48,9 @@ if 'backButton' not in st.session_state:
 
 # createsand handles the back button, creates forms for user input and extracts the categorie and the information of the user input
 def user_edit_input():
-    if not st.session_state.backButton:
-        back = st.button("back", disabled=(len(st.session_state.codes) < 2))
-        st.session_state.backButton = True
+    if len(st.session_state.codes) >= 1:	
+        back = st.button("back", disabled=(len(st.session_state.codes) <= 2))
+
         if back:
             st.session_state.codes.pop()
             render_code(st.session_state.codes[-1], None, None, True)
@@ -166,11 +166,11 @@ def createDiagramm():
     with st.expander("see code"):
         st.code(charts[0].code)
 
-    back = st.button("back", disabled=(len(st.session_state.codes) < 2))
-    if back:
-        st.session_state.codes.pop()
-        st.session_state.number_of_edits = st.session_state.number_of_edits - 1
-        render_code(st.session_state.codes[-1], None, None)
+    # back = st.button("back", disabled=(len(st.session_state.codes) < 2))
+    # if back:
+    #     st.session_state.codes.pop()
+    #     st.session_state.number_of_edits = st.session_state.number_of_edits - 1
+    #     render_code(st.session_state.codes[-1], None, None)
 
     #refresh = st.button("refresh")
     #if refresh:
