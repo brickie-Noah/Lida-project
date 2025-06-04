@@ -1,6 +1,9 @@
 notebook
 ipywidgets
-python-dotenv
-lida
-IPython
-openai
+python-dotenv 
+lida (pip install lida)
+IPython 
+openai (pip install openai)
+streamlit-audiorecorder (pip install streamlit-audiorecorder)
+streamlit   (pip install streamlit)
+ffmpeg (https://www.gyan.dev/ffmpeg/builds/)

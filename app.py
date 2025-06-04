@@ -3,6 +3,7 @@ from lida import Manager, TextGenerationConfig , llm
 from dotenv import load_dotenv
 import os
 import openai
+from openai import OpenAI
 from PIL import Image
 from io import BytesIO
 import base64
@@ -13,7 +14,9 @@ import json
 import test2
 import altair as alt
 from lida.datamodel import Summary
-
+import streamlit.components.v1 as components
+import tempfile
+from audiorecorder import audiorecorder
 
 
 lida = Manager(text_gen = llm("openai"))
@@ -46,26 +49,39 @@ if 'backButton' not in st.session_state:
         # reorder the bars to: NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN        
         # make the bars green yellow orange red and purple
 
-# createsand handles the back button, creates forms for user input and extracts the categorie and the information of the user input
+# creates and handles the back button, creates forms for user input and extracts the categorie and the information of the user input
 def user_edit_input():
-    if len(st.session_state.codes) >= 1:
-    #if not st.session_state.backButton:	
-        back = st.button("back", disabled=(len(st.session_state.codes) <= 2))
-        st.session_state.backButton = True
-
-        if back:
+    back = st.button("back")
+    st.session_state.backButton = True
+    
+    if back:
+        if len(st.session_state.codes) >= 1:
             st.session_state.codes.pop()
             render_code(st.session_state.codes[-1], None, None, True)
+        else:
+            st.write("no code found")
 
     st.write("Enter your edit here")
     try:
         with st.form("my_form", clear_on_submit=True, border=False):
-            input_value = st.text_input("Enter your edit here")
+            col1, col2 = st.columns([6, 1])
+            with col1:
+                input_value = st.text_input("Enter your edit here")
+            with col2:
+                # Sprachaufnahme und Whisper-Integration
+                st.markdown("####")
+                audio = audiorecorder("record", "stop")
+                if len(audio) > 0:
+                    audio.export("recording.wav", format="wav")
+                    with open("recording.wav", "rb") as audio_file:
+                        transcript = openai.audio.transcriptions.create(model="whisper-1", file=audio_file)
+                    input_value = transcript.text
+            st.write("Transcription: ", input_value)
+
             submitted = st.form_submit_button("submit")
             if submitted:
                 if input_value:
                     input_translated = test2.translate(input_value)
-                    #st.write(input_translated.content)
                     edit_type = test2.categorize(input_translated.content) #here u get a chatcompletionmessage 
                     if edit_type.content == "other":
                         edit(edit_type.content, input_translated.content)
@@ -81,7 +97,6 @@ def user_edit_input():
 def edit(edit_type=None, input_value=None):
     # Function to handle input and generate new code
     def handle_input(placeholder, code_generation_func, input_value):
-        #st.write(placeholder)
         if input_value != None:
             Summary = str(st.session_state.summary)
             return [code_generation_func(st.session_state.codes[-1], input_value, Summary), input_value]
@@ -168,19 +183,6 @@ def createDiagramm():
         st.session_state.codes.append(charts[0].code)
     with st.expander("see code"):
         st.code(charts[0].code)
-
-    # back = st.button("back", disabled=(len(st.session_state.codes) < 2))
-    # if back:
-    #     st.session_state.codes.pop()
-    #     st.session_state.number_of_edits = st.session_state.number_of_edits - 1
-    #     render_code(st.session_state.codes[-1], None, None)
-
-    #refresh = st.button("refresh")
-    #if refresh:
-        # Ursprünglichen Chart wiederherstellen
-        #st.session_state.codes = st.session_state.codes[0]
-        #render_code(st.session_state.codes[0], None, None)
-        
     user_edit_input()
 
 
@@ -225,24 +227,40 @@ def display_first_page():
         st.session_state.goals = goals
         st.session_state.data = data
 
-        goalNumber=0
+        goalNumber = 0
         for goal in goals:
             st.write(goal.question)
-            toggle = st.checkbox("choose this goal",value=False, key=goalNumber)
+            toggle = st.checkbox("choose this goal", value=False, key=goalNumber)
             with st.expander("see rational and visualization"):
                 st.write(goal.rationale + "\n\n" + goal.visualization)
             if toggle:
                 st.session_state.goalNumber = goalNumber
                 st.session_state.page = "second"
-            goalNumber=goalNumber+1
-            
-        ownGoal = st.text_input("Enter your own goal for Lida")
+            goalNumber += 1
+
+        # Sprachaufnahme und Whisper-Integration
+        col1, col2 = st.columns([6, 1])
+        with col1:
+            user_input = st.text_input("Enter your own goal for Lida", key="goal_input")
+        with col2:
+            # Sprachaufnahme und Whisper-Integration
+            st.markdown("####")
+            audio = audiorecorder("record", "stop")
+            if len(audio) > 0:
+                audio.export("recording.wav", format="wav")
+                with open("recording.wav", "rb") as audio_file:
+                    transcript = openai.audio.transcriptions.create(model="whisper-1", file=audio_file)
+                user_input = transcript.text
+        st.write("Transcription: ", user_input)
+
         if st.button("Submit"):
+            ownGoal = user_input #st.session_state.get("goal_input", "")
             if len(ownGoal) > 0:
                 goals.append(ownGoal)
-                st.session_state.goalNumber = len(goals) -1
+                st.session_state.goalNumber = len(goals) - 1
                 st.session_state.goals = goals
                 st.session_state.page = "second"
+
 
 
 ############ THIS WAS USED PREVIOUSLY IF WE USE A METHOD LIKE IN THE COMMENTED CODE AT THE BOTTOM WE CAN USE THIS ##############
