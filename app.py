@@ -11,7 +11,7 @@ import re
 import pandas as pd
 from IPython.display import display
 import json
-import test2
+import gpt_client
 import altair as alt
 from lida.datamodel import Summary
 import streamlit.components.v1 as components
@@ -44,6 +44,8 @@ if 'codes' not in st.session_state:
     st.session_state.codes = []
 if 'backButton' not in st.session_state:
     st.session_state.backButton = False
+if "edit_input_counter" not in st.session_state:
+    st.session_state.edit_input_counter = 0
 
     # some examples for the user to see what he can do with the code:
         # reorder the bars to: NEAR BAY, INLAND, <1H OCEAN, ISLAND, NEAR OCEAN        
@@ -52,8 +54,6 @@ if 'backButton' not in st.session_state:
 # creates and handles the back button, creates forms for user input and extracts the categorie and the information of the user input
 def user_edit_input():
     back = st.button("back")
-    st.session_state.backButton = True
-    
     if back:
         if len(st.session_state.codes) >= 1:
             st.session_state.codes.pop()
@@ -63,43 +63,66 @@ def user_edit_input():
 
     st.write("Enter your edit here")
     try:
+        user_input_voice = None	
+        col1, col2 = st.columns([5, 1])
+        with col2:
+            # voice recording and Whisper-Integration
+            #outside of the form to allow for audio recording without submitting the form
+            st.markdown("####")
+            audio2 = audiorecorder("record 2", "stop 2", key="audio_recorder2")
+            if len(audio2) > 0:
+                audio2.export("recording2.wav", format="wav")
+                with open("recording2.wav", "rb") as audio_file:
+                    transcript = openai.audio.transcriptions.create(model="whisper-1", file=audio_file)
+                user_input_voice = transcript.text
+                transcript = None
+                audio2 = None
+                os.remove("recording2.wav")
+            else:
+                # If no audio, keep previous or empty
+                st.session_state.edit_input = st.session_state.get("edit_input", "")
+
+         # Form for user to enter text input and submit the edit
         with st.form("my_form", clear_on_submit=True, border=False):
-            col1, col2 = st.columns([6, 1])
             with col1:
-                input_value = st.text_input("Enter your edit here")
-            with col2:
-                # Sprachaufnahme und Whisper-Integration
-                st.markdown("####")
-                audio = audiorecorder("record", "stop")
-                if len(audio) > 0:
-                    audio.export("recording.wav", format="wav")
-                    with open("recording.wav", "rb") as audio_file:
-                        transcript = openai.audio.transcriptions.create(model="whisper-1", file=audio_file)
-                    input_value = transcript.text
-            st.write("Transcription: ", input_value)
+                user_input_text = st.text_input("Enter your edit here", key="edit_input")
+                
+            # Use transcribed voice input if available, else text input
+            if user_input_voice:
+                st.write("Transcription: ", user_input_voice)
+                user_input = user_input_voice
+                user_input_voice = None
+            else:
+                user_input = user_input_text
 
             submitted = st.form_submit_button("submit")
             if submitted:
-                if input_value:
-                    input_translated = test2.translate(input_value)
-                    edit_type = test2.categorize(input_translated.content) #here u get a chatcompletionmessage 
-                    if edit_type.content == "other":
-                        edit(edit_type.content, input_translated.content)
-                    else: 
-                        edit_value = test2.extract_information(input_translated.content)
-                        edit(edit_type.content, edit_value.content)
+                if user_input:
+                    make_edit(user_input)
     except Exception as e:
-       user_edit_input()
+       st.error(f"Fehler: {e}")
     return None
 
+def make_edit(user_input):
+    try:
+        input_translated = gpt_client.translate(user_input)
+        edit_type = gpt_client.categorize(input_translated.content) #here u get a chatcompletionmessage 
+        if edit_type.content == "other":
+            edit(edit_type.content, input_translated.content)
+        else: 
+            edit_value = gpt_client.extract_information(input_translated.content)
+            edit(edit_type.content, edit_value.content)
+    except Exception as e:
+        make_edit(user_input)  # Retry if an error occurs
 
-# takes the inputed data and decides which edit function to use, also extracts the graph code from the chatgpt response
+
+# takes the inputed data and decides which GPT client function to use based on edit type, also extracts the graph code from the chatgpt response
 def edit(edit_type=None, input_value=None):
     # Function to handle input and generate new code
     def handle_input(placeholder, code_generation_func, input_value):
         if input_value != None:
-            Summary = str(st.session_state.summary)
-            return [code_generation_func(st.session_state.codes[-1], input_value, Summary), input_value]
+            summary_str = str(st.session_state.summary)
+            return [code_generation_func(st.session_state.codes[-1], input_value, summary_str), input_value]
         return None
 
     newcode = None
@@ -108,40 +131,41 @@ def edit(edit_type=None, input_value=None):
         st.subheader("no edit type")
         return
     if edit_type == "reorder":
-        input = handle_input("reorder data (divide with a ',')", test2.reorder_data, input_value)
+        gpt_code_answer = handle_input("reorder data (divide with a ',')", gpt_client.reorder_data, input_value)
     elif edit_type == "highlight":
-        input = handle_input("highlight (what do you want to highlight?)", test2.higlighting, input_value)
+        # e.g., Highlight specific chart elements
+        gpt_code_answer = handle_input("highlight (what do you want to highlight?)", gpt_client.higlighting, input_value)
     elif edit_type == "change_color":
-        input = handle_input("change color data (what color do you want?)", test2.change_color, input_value)
+        gpt_code_answer = handle_input("change color data (what color do you want?)", gpt_client.change_color, input_value)
     elif edit_type == "zoom":
-        input = handle_input("zooming", test2.zooming, input_value)
+        gpt_code_answer = handle_input("zooming", gpt_client.zooming, input_value)
     elif edit_type == "add_data":
-        input = handle_input("add data (what data do you want to add?)", test2.add_data, input_value)
+        gpt_code_answer = handle_input("add data (what data do you want to add?)", gpt_client.add_data, input_value)
     elif edit_type == "show_above_value":
-        input = handle_input("show above value (above which value?)", test2.show_above_value, input_value)
+        gpt_code_answer = handle_input("show above value (above which value?)", gpt_client.show_above_value, input_value)
     elif edit_type == "show_below_value":
-        input = handle_input("show below value (below which value?)", test2.show_below_value, input_value)
+        gpt_code_answer = handle_input("show below value (below which value?)", gpt_client.show_below_value, input_value)
     elif edit_type == "show_between_values":
-        input = handle_input("show between values (between which values? divide with 'and')", test2.show_between_values, input_value)
+        gpt_code_answer = handle_input("show between values (between which values? divide with 'and')", gpt_client.show_between_values, input_value)
     elif edit_type == "show_one_category":
-        input = handle_input("show one category (which category?)", test2.show_one_category, input_value)
+        gpt_code_answer = handle_input("show one category (which category?)", gpt_client.show_one_category, input_value)
     elif edit_type == "change_chart_type":
-        input = handle_input("change chart type", test2.change_chart_type, input_value)
+        gpt_code_answer = handle_input("change chart type", gpt_client.change_chart_type, input_value)
     elif edit_type == "change_chart_type_better_fit":
-        input = handle_input("change chart type better fit (which chart type?)", test2.change_chart_type_better_fit, input_value)
+        gpt_code_answer = handle_input("change chart type better fit (which chart type?)", gpt_client.change_chart_type_better_fit, input_value)
     elif edit_type == "other":
-        input = handle_input("other (experimental)", test2.other, input_value)
+        gpt_code_answer = handle_input("other (experimental)", gpt_client.other, input_value)
     else:
         return
     
 
 
-    if input is not None:
-        newcode = input[0]
+    if gpt_code_answer is not None:
+        newcode = gpt_code_answer[0]
 
     if newcode is not None:
         # get the code from the chatgpt response
-        newcode = test2.extract_code_v2(newcode)
+        newcode = gpt_client.extract_code_v2(newcode)
         render_code(newcode, edit_type, input_value)
 
     
@@ -152,6 +176,7 @@ def render_code(newcode, edit_type, input_value, back_button=False):
     else:
         try:
                 exec_locals = {}
+                # Execute the generated code to extract and display the Altair chart
                 exec(newcode, globals(), exec_locals)
                 # Access the plot function from the local variables captured by exec()
                 plot = exec_locals['plot']
@@ -163,6 +188,7 @@ def render_code(newcode, edit_type, input_value, back_button=False):
                 with st.expander("see new code"):
                     st.code(newcode)
         except Exception as e:
+            # If generated code fails, re-run GPT to regenerate based on same edit
             edit(edit_type, input_value)
 
 
@@ -177,7 +203,7 @@ def createDiagramm():
     data_dict = st.session_state.data.to_dict(orient='records')
     charts[0].spec['data'] = {"values": data_dict}
 
-        #display the chart    
+    #display the chart    
     original = st.vega_lite_chart(charts[0].spec, use_container_width=True)
     if st.session_state.codes == []:
         st.session_state.codes.append(charts[0].code)
@@ -206,7 +232,8 @@ def display_second_page():
     else:
         st.write("no data found")
 
-
+# Upload CSV and generate data summary + initial visualization goals using LIDA
+# Let user pick a suggested goal or enter their own goal via text or voice
 def display_first_page():
     textgen_config = TextGenerationConfig(n=1, temperature=0.5, model="gpt-4o", use_cache=True)
 
@@ -238,23 +265,25 @@ def display_first_page():
                 st.session_state.page = "second"
             goalNumber += 1
 
-        # Sprachaufnahme und Whisper-Integration
-        col1, col2 = st.columns([6, 1])
+        # Input for own goal
+        col1, col2 = st.columns([5, 1])
         with col1:
             user_input = st.text_input("Enter your own goal for Lida", key="goal_input")
         with col2:
-            # Sprachaufnahme und Whisper-Integration
+            # Voice recording and Whisper integration
             st.markdown("####")
-            audio = audiorecorder("record", "stop")
+            audio = audiorecorder("record 1", "stop 1", key="audio_recorder1")
             if len(audio) > 0:
                 audio.export("recording.wav", format="wav")
                 with open("recording.wav", "rb") as audio_file:
                     transcript = openai.audio.transcriptions.create(model="whisper-1", file=audio_file)
                 user_input = transcript.text
+                os.remove("recording.wav")
         st.write("Transcription: ", user_input)
 
+
         if st.button("Submit"):
-            ownGoal = user_input #st.session_state.get("goal_input", "")
+            ownGoal = user_input
             if len(ownGoal) > 0:
                 goals.append(ownGoal)
                 st.session_state.goalNumber = len(goals) - 1
@@ -262,20 +291,11 @@ def display_first_page():
                 st.session_state.page = "second"
 
 
-
-############ THIS WAS USED PREVIOUSLY IF WE USE A METHOD LIKE IN THE COMMENTED CODE AT THE BOTTOM WE CAN USE THIS ##############
-# #lida gives a base64 string which we convert to a image here
-def base64_to_image(base64_string):
-    byte_data = base64.b64decode(base64_string)
-    # Use BytesIO to convert the byte data to image
-    return Image.open(BytesIO(byte_data))
-
 ################################### MANAGE THE DIFFERENT PAGES ##################################
 # Dictionary to map page names to functions
 pages = {
     "first": display_first_page,
     "second": display_second_page,
-    #"third": display_third_page
 } 
 # Initialize session state if not already done
 if 'page' not in st.session_state:

@@ -3,7 +3,7 @@ from lida import Manager, TextGenerationConfig , llm
 from dotenv import load_dotenv
 import os
 import openai
-import test2
+import gpt_client
 import altair as alt
 from lida.datamodel import Summary
 import pandas as pd

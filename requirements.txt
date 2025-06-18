@@ -1,9 +1,12 @@
+# Optional: Nur notwendig für Sprachaufnahme (Speech-to-Text)
+# -> ffmpeg muss manuell installiert werden: https://www.gyan.dev/ffmpeg/builds/
+# -> streamlit-audiorecorder kann weggelassen werden, wenn die Funktion nicht gebraucht wird
+
 notebook
 ipywidgets
-python-dotenv 
-lida (pip install lida)
-IPython 
-openai (pip install openai)
-streamlit-audiorecorder (pip install streamlit-audiorecorder)
-streamlit   (pip install streamlit)
-ffmpeg (https://www.gyan.dev/ffmpeg/builds/)
+python-dotenv
+IPython
+openai
+streamlit
+streamlit-audiorecorder
+lida
